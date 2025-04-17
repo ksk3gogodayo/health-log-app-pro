@@ -199,6 +199,33 @@ const HealthLogApp = () => {
       font-size: 14px;
     }
   }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #121212;
+      color: #eeeeee;
+    }
+
+    textarea,
+    button {
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+      border: 1px solid #444;
+    }
+
+    .calendar {
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+
+    .calendar abbr {
+      color: #f0f0f0;
+    }
+
+    div {
+      background-color: #1a1a1a;
+    }
+  }
 `}
 </style>
             <h2>体調記録アプリ</h2>
