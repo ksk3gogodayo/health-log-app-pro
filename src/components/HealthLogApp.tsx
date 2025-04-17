@@ -175,6 +175,31 @@ const HealthLogApp = () => {
 
     return (
         <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
+            <style>
+{`
+  textarea {
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 6px;
+    box-shadow: 0 0 3px rgba(0,0,0,0.1);
+    width: 100%;
+  }
+
+  button {
+    font-size: 16px;
+    padding: 10px 16px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    min-height: 44px;
+  }
+
+  @media (max-width: 600px) {
+    .calendar {
+      font-size: 14px;
+    }
+  }
+`}
+</style>
             <h2>体調記録アプリ</h2>
 
             {/* ✅ カレンダーをここに追加 */}
