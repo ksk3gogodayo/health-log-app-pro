@@ -239,6 +239,21 @@ const HealthLogApp = () => {
     div {
       background-color: #1a1a1a;
     }
+
+    .log-entry {
+      background-color: #1e1e1e !important;
+      color: #f0f0f0;
+      border: 1px solid #444;
+    }
+    
+    label {
+      color: #f0f0f0;
+    }
+    
+    button:hover {
+      opacity: 0.85;
+      transition: 0.2s;
+    }
   }
 `}
 </style>
@@ -257,6 +272,7 @@ const HealthLogApp = () => {
                 filteredLogs.map((log, index) => (
                     <div
                         key={index}
+                        className="log-entry"
                         style={{
                             border: "1px solid #ccc",
                             borderRadius: "8px",
