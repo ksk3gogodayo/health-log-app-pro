@@ -151,7 +151,15 @@ const HealthLogApp = () => {
 
         if (log.id) {
             console.log("🗑 Firestore削除実行:", log.id);
-            deleteHealthLog(log.id);
+            deleteHealthLog(log.id)
+                .then(() => {
+                    console.log("✅ Firestore削除成功:", log.id);
+                    alert("Firestoreから削除されました！");
+                })
+                .catch((e) => {
+                    console.error("🔥 Firestore削除失敗:", e);
+                    alert("Firestoreの削除に失敗しました！");
+                });
         } else {
             console.warn("❗ log.id が undefined なのでFirestore削除できない");
         }
