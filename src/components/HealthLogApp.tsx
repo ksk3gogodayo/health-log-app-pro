@@ -204,6 +204,7 @@ const HealthLogApp = () => {
 
             {/* ✅ カレンダーをここに追加 */}
             <Calendar
+                className="calendar"
                 onChange={setSelectedDate}
                 value={selectedDate}
                 style={{ marginBottom: "20px" }}
