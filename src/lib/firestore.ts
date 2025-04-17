@@ -4,13 +4,14 @@ import { db } from "../firebase";
 // 保存用関数（すでにあるやつ）
 export const saveHealthLog = async (data: any) => {
   try {
-    await addDoc(collection(db, "healthLogs"), data);
-    console.log("📡 Firestore に送信開始:", data);
-    console.log("✅ Firestoreに保存成功");
+    const docRef = await addDoc(collection(db, "healthLogs"), data);
+    console.log("✅ Firestoreに保存成功 ID:", docRef.id);
     alert("Firestoreに保存されたよ！");
+    return docRef.id; // ← 🔥 これを return！
   } catch (e) {
     console.error("🔥 保存失敗", e);
     alert("Firestore保存に失敗したよ！");
+    return null;
   }
 };
 

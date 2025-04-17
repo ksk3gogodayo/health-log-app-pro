@@ -95,43 +95,43 @@ const HealthLogApp = () => {
     };
 
     // 記録処理
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const now = new Date();
         const newLog: LogItem = {
-            date: now.toLocaleDateString(),
-            time: now.toLocaleTimeString(),
-            memo,
-            meds,
-            pollenLevel,
+          date: now.toLocaleDateString(),
+          time: now.toLocaleTimeString(),
+          memo,
+          meds,
+          pollenLevel,
         };
-
+      
         if (editIndex !== null) {
-            const editedLog = { ...newLog, id: logList[editIndex].id };
-
-            setLogList((prev) => {
-                const updated = [...prev];
-                updated[editIndex] = editedLog;
-                return updated;
-            });
-            setEditIndex(null);
-
-            if (editedLog.id) {
-                updateHealthLog(editedLog.id, editedLog).then(async () => {
-                    const updatedLogs = await fetchHealthLogs();
-                    setLogList(updatedLogs as LogItem[]);
-                  });
-            }
-            console.log("更新実行:", editedLog)
+          const editedLog = { ...newLog, id: logList[editIndex].id };
+      
+          setLogList((prev) => {
+            const updated = [...prev];
+            updated[editIndex] = editedLog;
+            return updated;
+          });
+          setEditIndex(null);
+      
+          if (editedLog.id) {
+            await updateHealthLog(editedLog.id, editedLog);
+            const updatedLogs = await fetchHealthLogs();
+            setLogList(updatedLogs as LogItem[]);
+          }
         } else {
-            setLogList((prev) => [...prev, newLog]);
-            saveHealthLog(newLog);
+          const id = await saveHealthLog(newLog); // ← id を受け取る
+          if (id) {
+            setLogList((prev) => [...prev, { ...newLog, id }]); // ← id付きで保存
+          }
         }
-
+      
         setMemo("");
         setMeds({ asacol: false, clearmin: false, ebios: false });
         setPollenLevel("");
         alert("記録されました！");
-    };
+      };
 
     // 編集処理
     const handleEdit = (index: number) => {
