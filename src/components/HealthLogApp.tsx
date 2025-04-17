@@ -7,6 +7,14 @@ import { fetchHealthLogs, saveHealthLog, deleteHealthLog, updateHealthLog } from
 type PollenLevel = "弱" | "中" | "強";
 
 // 薬チェック用の型
+const messages = [
+  "🌿 今日もおつかれさま",
+  "😊 記録しててえらいね",
+  "🍵 無理せんと、ゆるっといこう",
+  "🌸 深呼吸、忘れてない？",
+  "💪 小さな一歩でも前進やで",
+  "☁️ 曇ってても、心は晴れるよ"
+];
 type Meds = {
     asacol: boolean;
     clearmin: boolean;
@@ -37,6 +45,12 @@ const HealthLogApp = () => {
         const storedLogs = localStorage.getItem("healthLog");
         return storedLogs ? JSON.parse(storedLogs) : [];
     });
+    const [todayMessage, setTodayMessage] = useState("");
+
+    useEffect(() => {
+      const random = Math.floor(Math.random() * messages.length);
+      setTodayMessage(messages[random]);
+    }, []);
 
 
     useEffect(() => {
@@ -229,6 +243,7 @@ const HealthLogApp = () => {
 `}
 </style>
             <h2>体調記録アプリ</h2>
+            <p style={{ fontSize: "18px", color: "#666", marginBottom: "10px" }}>{todayMessage}</p>
 
             {/* ✅ カレンダーをここに追加 */}
             <Calendar
