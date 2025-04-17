@@ -183,6 +183,7 @@ const HealthLogApp = () => {
     border-radius: 6px;
     box-shadow: 0 0 3px rgba(0,0,0,0.1);
     width: 100%;
+    margin-bottom: 12px;
   }
 
   button {
