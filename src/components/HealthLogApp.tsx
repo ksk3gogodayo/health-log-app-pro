@@ -131,7 +131,6 @@ const HealthLogApp = () => {
         setMeds({ asacol: false, clearmin: false, ebios: false });
         setPollenLevel("");
         alert("記録されました！");
-        window.scrollTo({ top: 0, behavior: "smooth" });
       };
 
     // 編集処理
