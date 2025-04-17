@@ -264,8 +264,9 @@ const HealthLogApp = () => {
                 rows={3}
                 placeholder="今日の体調をひとことで..."
                 value={memo}
-            onChange={(e) => setMemo(e.target.value)}
+                onChange={(e) => setMemo(e.target.value)}
                 onFocus={() => window.scrollTo(0, 0)}
+                style={{ marginBottom: "300px" }}
             />
 
             {/* 薬チェック */}
