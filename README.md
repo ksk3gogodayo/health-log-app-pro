@@ -104,6 +104,5 @@ npm start
 
 ## 🙋‍♂️ 作者
 
-**けい**  
-👉 [GitHubプロフィールはこちら](https://github.com/ksk3gogodayo)｜[X（旧Twitter）](https://twitter.com/ksk3gogodayo)  
+**けい**｜[GitHub](https://github.com/ksk3gogodayo)｜[X（旧Twitter）](https://twitter.com/ksk3gogodayo)  
 ※Xは現在あまり稼働していませんが、お気軽にどうぞ！
