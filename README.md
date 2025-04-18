@@ -15,6 +15,8 @@ Markdown形式での振り返りや共有ができるシンプルなログアプ
 
 ▶️ [https://health-log-app.vercel.app](https://health-log-app.vercel.app)
 
+## 📸 スクリーンショット
+
 <p align="center">
   <img src="public/screenshot01.png" width="300" alt="アプリ画面1" />
   <img src="public/screenshot02.png" width="300" alt="アプリ画面2" />
@@ -97,10 +99,12 @@ npm start
 ## 📄 ライセンス
 
 このプロジェクトは [MIT ライセンス](./LICENSE) のもとで公開されています。
-⸻
+
+---
 
 ## 🙋‍♂️ 作者
 
-けい（[@ksk3gogodayo on GitHub](https://github.com/ksk3gogodayo)）  
-X（旧Twitter）：[@ksk3gogodayo](https://twitter.com/ksk3gogodayo)  
+**けい**  
+[GitHub @ksk3gogodayo](https://github.com/ksk3gogodayo)  
+[X（旧Twitter）@ksk3gogodayo](https://twitter.com/ksk3gogodayo)  
 ※Xは現在あまり稼働していませんが、お気軽にどうぞ！
