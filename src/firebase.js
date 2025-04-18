@@ -24,3 +24,5 @@ signInAnonymously(auth)
   .catch((error) => {
     console.error("❌ 匿名ログイン失敗:", error);
   });
+
+  

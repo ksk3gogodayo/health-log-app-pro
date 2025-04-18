@@ -62,9 +62,23 @@ npm start
 
 ## 🛡 セキュリティについて（Firestoreのルール）
 
-現在は個人利用前提で Firestore Security Rules を許可（true）に設定しています。  
-今後、他者との共有や公開を検討する場合は、Firebase Authentication の導入と  
-ユーザーごとの読み書き制限ルールの実装が必要です。
+現在は Firebase Authentication を導入し、  
+Firestore 上のログはユーザーごとの UID によって読み書きを制限しています。  
+
+Firestore Security Rules：
+```js
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /healthLogs/{logId} {
+      allow read, write: if request.auth != null && request.auth.uid == request.resource.data.uid;
+    }
+  }
+}
+```
+
+この設定により、ログインユーザーは自分のデータのみにアクセス可能です。  
+他人の記録を取得・編集・削除することはできません。
 
 ---
 

@@ -1,56 +1,86 @@
-import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { useEffect, useState } from "react";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  updateDoc,
+  deleteDoc,
+  addDoc
+} from "firebase/firestore";
+import { auth, db } from "../firebase";
 
-// 保存用関数（すでにあるやつ）
-export const saveHealthLog = async (data: any) => {
+
+type LogItem = {
+  id: string;
+  date: string;
+  time: string;
+  memo: string;
+  pollenLevel: string;
+  meds: {
+    asacol: boolean;
+    clearmin: boolean;
+    ebios: boolean;
+  };
+  uid: string;
+};
+
+// AdminPanel component has been removed from this file
+
+export const saveHealthLog = async (log: LogItem) => {
   try {
-    const docRef = await addDoc(collection(db, "healthLogs"), data);
+    const uid = auth.currentUser?.uid;
+    if (!uid) throw new Error("未ログイン");
+
+    const docRef = await addDoc(collection(db, "healthLogs"), {
+      ...log,
+      uid,
+    });
+
     console.log("✅ Firestoreに保存成功 ID:", docRef.id);
-    alert("Firestoreに保存されたよ！");
-    return docRef.id; // ← 🔥 これを return！
-  } catch (e) {
-    console.error("🔥 保存失敗", e);
-    alert("Firestore保存に失敗したよ！");
-    return null;
+    return docRef.id;
+  } catch (error) {
+    console.error("🔥 保存失敗", error);
+    throw error;
   }
 };
 
-// 🔥 この部分が「fetchHealthLogs」！
-export const fetchHealthLogs = async () => {
+export const fetchHealthLogs = async (uid: string) => {
   try {
-    const snapshot = await getDocs(collection(db, "healthLogs"));
-    const logs = snapshot.docs.map((doc) => ({
-      id: doc.id,            // ← FirestoreのドキュメントID
-      ...doc.data(),         // ← 本体の中身（memo, date など）
-    }));
-    return logs;
-  } catch (e) {
-    console.error("🔥 取得失敗", e);
+    const q = query(
+      collection(db, "healthLogs"),
+      where("uid", "==", uid)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as LogItem[];
+  } catch (error) {
+    console.error("🔥 取得失敗", error);
     return [];
   }
 };
 
-// Firestoreからの削除
-export const deleteHealthLog = async (id: string) => {
-  try {
-    await deleteDoc(doc(db, "healthLogs", id));
-    console.log("🗑 Firestoreから削除完了:", id);
-  } catch (e) {
-    console.error("🔥 Firestore削除失敗", e);
-  }
-};
-
-// Firestoreのデータを更新
 export const updateHealthLog = async (id: string, data: any) => {
   try {
     const docRef = doc(db, "healthLogs", id);
-    await updateDoc(docRef, {
-      ...data,
-      updatedAt: new Date(), // ← 🔥 これが毎回変わるので強制的にFirestoreが更新してくれる！
-    });
-    alert("Firestoreを更新したよ！");
-  } catch (e) {
-    console.error("🔥 更新失敗", e);
-    alert("Firestore更新に失敗したよ！");
+    await updateDoc(docRef, data);
+    console.log("📝 Firestore更新完了:", id);
+  } catch (error) {
+    console.error("🔥 Firestore更新エラー:", error);
+    throw error;
+  }
+};
+
+export const deleteHealthLog = async (id: string) => {
+  try {
+    const docRef = doc(db, "healthLogs", id);
+    await deleteDoc(docRef);
+    console.log("🗑 Firestore削除完了:", id);
+  } catch (error) {
+    console.error("🔥 Firestore削除エラー:", error);
+    throw error;
   }
 };

@@ -3,6 +3,10 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // スタイル読み込み
 import { fetchHealthLogs, saveHealthLog, deleteHealthLog, updateHealthLog } from "../lib/firestore.ts";
 
+import { auth } from "../firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
+
 // 花粉レベルの型
 type PollenLevel = "弱" | "中" | "強";
 
@@ -29,9 +33,11 @@ type LogItem = {
     memo: string;
     meds: Meds;
     pollenLevel: PollenLevel | "";
+    uid: string; // ← 追加！
 };
 
 const HealthLogApp = () => {
+    
     // ステート管理
     const [memo, setMemo] = useState<string>("");
     const [meds, setMeds] = useState<Meds>({
@@ -46,6 +52,16 @@ const HealthLogApp = () => {
         return storedLogs ? JSON.parse(storedLogs) : [];
     });
     const [todayMessage, setTodayMessage] = useState("");
+
+    // 追加
+const [user, setUser] = useState(null);
+
+useEffect(() => {
+  const unsub = onAuthStateChanged(auth, (firebaseUser) => {
+    setUser(firebaseUser);
+  });
+  return () => unsub();
+}, []);
 
     useEffect(() => {
       const random = Math.floor(Math.random() * messages.length);
@@ -117,6 +133,7 @@ const HealthLogApp = () => {
           memo,
           meds,
           pollenLevel,
+          uid: user?.uid || "",
         };
       
         if (editIndex !== null) {
