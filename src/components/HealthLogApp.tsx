@@ -59,6 +59,7 @@ const [user, setUser] = useState(null);
 useEffect(() => {
   const unsub = onAuthStateChanged(auth, (firebaseUser) => {
     setUser(firebaseUser);
+    console.log("✅ ログイン中のユーザー:", firebaseUser?.email, "uid:", firebaseUser?.uid);
   });
   return () => unsub();
 }, []);
