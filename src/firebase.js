@@ -1,6 +1,7 @@
-// src/firebase.ts
+// firebase.ts
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -12,6 +13,14 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
 
-export { db };
+// 匿名ログイン
+signInAnonymously(auth)
+  .then(() => {
+    console.log("✅ 匿名ログイン成功");
+  })
+  .catch((error) => {
+    console.error("❌ 匿名ログイン失敗:", error);
+  });

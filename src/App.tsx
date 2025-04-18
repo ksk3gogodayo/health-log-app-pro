@@ -1,5 +1,7 @@
 import HealthLogApp from './components/HealthLogApp.tsx';
 
+// App.tsx
+import "./firebase"; // これだけでOK！
 
 function App() {
   return (
