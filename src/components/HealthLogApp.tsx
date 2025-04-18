@@ -47,10 +47,7 @@ const HealthLogApp = () => {
     });
     const [pollenLevel, setPollenLevel] = useState<PollenLevel | "">("");
     const [editIndex, setEditIndex] = useState<number | null>(null); // 👈 追加  
-    const [logList, setLogList] = useState<LogItem[]>(() => {
-        const storedLogs = localStorage.getItem("healthLog");
-        return storedLogs ? JSON.parse(storedLogs) : [];
-    });
+    const [logList, setLogList] = useState<LogItem[]>([]);
     const [todayMessage, setTodayMessage] = useState("");
 
     // 追加
@@ -79,9 +76,6 @@ useEffect(() => {
         loadLogs();
     }, [user]);
 
-    useEffect(() => {
-        localStorage.setItem("healthLog", JSON.stringify(logList));
-    }, [logList]);
 
     // 日付ステートを追加
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
