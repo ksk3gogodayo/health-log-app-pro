@@ -68,23 +68,15 @@ useEffect(() => {
       setTodayMessage(messages[random]);
     }, []);
 
-
-    useEffect(() => {
-        const loadLogs = async () => {
-            const fetchedLogs = await fetchHealthLogs();
-            setLogList(fetchedLogs as LogItem[]);
-        };
-        loadLogs();
-    }, []);
-
     // Firestoreからログ取得（初回だけ実行）
     useEffect(() => {
         const loadLogs = async () => {
-            const fetchedLogs = await fetchHealthLogs();
+            if (!user?.uid) return;
+            const fetchedLogs = await fetchHealthLogs(user.uid);
             setLogList(fetchedLogs as LogItem[]);
         };
         loadLogs();
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         localStorage.setItem("healthLog", JSON.stringify(logList));
@@ -137,7 +129,7 @@ useEffect(() => {
         };
       
         if (editIndex !== null) {
-          const editedLog = { ...newLog, id: logList[editIndex].id };
+          const editedLog = { ...newLog, id: logList[editIndex].id, uid: user?.uid || "" };
       
           setLogList((prev) => {
             const updated = [...prev];
@@ -148,20 +140,22 @@ useEffect(() => {
       
           if (editedLog.id) {
             await updateHealthLog(editedLog.id, editedLog);
-            const updatedLogs = await fetchHealthLogs();
+            const updatedLogs = await fetchHealthLogs(user?.uid || "");
             setLogList(updatedLogs as LogItem[]);
+            alert("編集されました！");
           }
         } else {
           const id = await saveHealthLog(newLog); // ← id を受け取る
           if (id) {
             setLogList((prev) => [...prev, { ...newLog, id }]); // ← id付きで保存
+            alert("記録されました！");
           }
         }
       
         setMemo("");
         setMeds({ asacol: false, clearmin: false, ebios: false });
         setPollenLevel("");
-        alert("記録されました！");
+        
       };
 
     // 編集処理
