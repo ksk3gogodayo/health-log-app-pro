@@ -106,7 +106,7 @@ npm start
 
 **けい**
 
-- GitHub: [ksk3gogodayo](https://github.com/ksk3gogodayo)  
-- X (旧Twitter): [ksk3gogodayo](https://twitter.com/ksk3gogodayo)
+GitHub: <a href="https://github.com/ksk3gogodayo">ksk3gogodayo</a><br />
+X（旧Twitter）: <a href="https://twitter.com/ksk3gogodayo">ksk3gogodayo</a>
 
 ※Xは現在あまり稼働していませんが、お気軽にどうぞ！
