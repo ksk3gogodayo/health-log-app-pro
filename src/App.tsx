@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./firebase";
+import { User } from "firebase/auth";
+import HealthLogApp from "./components/HealthLogApp";
+import Login from "./Login";
+import SignUp from "./SignUp"; // 新しく追加されたインポート
+import { getSeason } from "./lib/getSeason";
+import { seasonThemes } from "./lib/theme";
 
-import HealthLogApp from "./components/HealthLogApp.tsx";
-import Login from "./Login.tsx";
-import SignUp from "./SignUp.tsx"; // 新しく追加されたインポート
+const season = getSeason();
+const theme = seasonThemes[season];
 
 const App = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -23,14 +29,25 @@ const App = () => {
   }
 
   return (
-    <div>
+    <div
+      style={{
+        background: theme.background,       // ←ここ変更点！
+        color: theme.color,                 // ←ここもcolorに合わせる！
+        minHeight: "100vh",
+        padding: "1rem",
+        backgroundSize: "cover",            // 背景画像表示のために追加
+        backgroundPosition: "center",
+      }}
+    >
       {!user ? (
         <>
           <Login />
-          <SignUp /> {/* 新規登録コンポーネントを追加 */}
         </>
       ) : (
         <>
+          {/* <p style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+            {theme.message}
+          </p> */}
           <button onClick={() => signOut(auth)}>ログアウト</button>
           <HealthLogApp />
         </>

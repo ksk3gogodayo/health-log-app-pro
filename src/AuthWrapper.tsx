@@ -1,12 +1,11 @@
 // src/AuthWrapper.tsx
 import { useState, useEffect } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth } from "./firebase";
 import Login from "./Login";
-import HealthLogApp from "./HealthLogApp";
-
+import HealthLogApp from "./components/HealthLogApp";
 const AuthWrapper = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -17,10 +16,13 @@ const AuthWrapper = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
-      alert("ログアウトしました！");
+      // なにか処理
     } catch (err) {
-      alert("ログアウト失敗：" + err.message);
+      if (err instanceof Error) {
+        alert("ログアウト失敗：" + err.message);
+      } else {
+        alert("ログアウト失敗：不明なエラーです");
+      }
     }
   };
 

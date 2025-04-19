@@ -2,9 +2,14 @@
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase";
-import SignUp from "./SignUp.tsx";
+import SignUp from "./SignUp";
+import { getSeason } from "./lib/getSeason";
+import { seasonThemes } from "./lib/theme";
 
 const Login = () => {
+  const season = getSeason();
+  const theme = seasonThemes[season];
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -21,44 +26,127 @@ const Login = () => {
 
   if (showSignUp) {
     return (
-      <div style={{ padding: "20px" }}>
+      <div
+        style={{
+          background: theme.background,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          minHeight: "100vh",
+          padding: "2rem",
+          color: theme.color,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <h1 style={{ textShadow: "0 0 8px rgba(0,0,0,0.5)", marginBottom: "1rem" }}>
+          新規登録
+        </h1>
         <SignUp setShowLogin={() => setShowSignUp(false)} />
-        <p>
+        <p style={{ marginTop: "1rem", textShadow: "0 0 6px rgba(0,0,0,0.4)" }}>
           すでにアカウントをお持ちの方は{" "}
-          <button onClick={() => setShowSignUp(false)}>ログインへ戻る</button>
+          <button
+            onClick={() => setShowSignUp(false)}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#0077cc",
+              cursor: "pointer",
+              textDecoration: "underline",
+            }}
+          >
+            ログインへ戻る
+          </button>
         </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleLogin} style={{ padding: "20px" }}>
-      <h2>ログイン</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <input
-        type="email"
-        placeholder="メールアドレス"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <br />
-      <input
-        type="password"
-        placeholder="パスワード"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <br />
-      <button type="submit">ログイン</button>
-      <p style={{ marginTop: "10px" }}>
-        アカウントをお持ちでない方は{" "}
-        <button type="button" onClick={() => setShowSignUp(true)}>
-          新規登録
-        </button>
+    <div
+      style={{
+        background: theme.background,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        color: theme.color,
+        padding: "2rem",
+      }}
+    >
+      <h1
+        style={{
+          marginBottom: "0.5rem",
+          textShadow: "0 0 8px rgba(0,0,0,0.5)",
+        }}
+      >
+        体調記録アプリへようこそ
+      </h1>
+
+      <p
+        style={{
+          marginBottom: "2rem",
+          fontWeight: "bold",
+          textShadow: "0 0 8px rgba(0,0,0,0.5)",
+        }}
+      >
+        {theme.message}
       </p>
-    </form>
+
+      <form
+        onSubmit={handleLogin}
+        style={{
+          backgroundColor: "rgba(255, 255, 255, 0.85)",
+          padding: "2rem",
+          borderRadius: "12px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+          color: "#000",
+          minWidth: "280px",
+        }}
+      >
+        <h2>ログイン</h2>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <input
+          type="email"
+          placeholder="メールアドレス"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
+        />
+        <input
+          type="password"
+          placeholder="パスワード"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
+        />
+        <button type="submit" style={{ width: "100%", padding: "0.5rem" }}>
+          ログイン
+        </button>
+        <p style={{ marginTop: "1rem", textAlign: "center" }}>
+          アカウントをお持ちでない方は{" "}
+          <button
+            type="button"
+            onClick={() => setShowSignUp(true)}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#0077cc",
+              cursor: "pointer",
+              textDecoration: "underline",
+            }}
+          >
+            新規登録
+          </button>
+        </p>
+      </form>
+    </div>
   );
 };
 

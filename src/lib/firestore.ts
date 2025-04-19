@@ -28,8 +28,7 @@ type LogItem = {
 
 // AdminPanel component has been removed from this file
 
-export const saveHealthLog = async (log: LogItem) => {
-  try {
+export const saveHealthLog = async (log: Omit<LogItem, "id">) => {  try {
     const uid = auth.currentUser?.uid;
     if (!uid) throw new Error("未ログイン");
 

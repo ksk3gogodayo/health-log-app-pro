@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // スタイル読み込み
-import { fetchHealthLogs, saveHealthLog, deleteHealthLog, updateHealthLog } from "../lib/firestore.ts";
+import { fetchHealthLogs, saveHealthLog, deleteHealthLog, updateHealthLog } from "../lib/firestore";
 
 import { auth } from "../firebase";
-import { onAuthStateChanged } from "firebase/auth";
-
+import { onAuthStateChanged, User } from "firebase/auth";
+import { getSeason, seasonThemes } from "lib/theme";
 
 // 花粉レベルの型
 type PollenLevel = "弱" | "中" | "強";
 
 // 薬チェック用の型
 const messages = [
-  "🌿 今日もおつかれさま",
-  "😊 記録しててえらいね",
-  "🍵 無理せんと、ゆるっといこう",
-  "🌸 深呼吸、忘れてない？",
-  "💪 小さな一歩でも前進やで",
-  "☁️ 曇ってても、心は晴れるよ"
+    "🌿 今日もおつかれさま",
+    "😊 記録しててえらいね",
+    "🍵 無理せんと、ゆるっといこう",
+    "🌸 深呼吸、忘れてない？",
+    "💪 小さな一歩でも前進やで",
+    "☁️ 曇ってても、心は晴れるよ"
 ];
 type Meds = {
     asacol: boolean;
@@ -27,7 +27,7 @@ type Meds = {
 
 // 体調ログの型（1件分）
 type LogItem = {
-    id?: string; // ← これ追加！（Firestore用ID）
+    id: string; // ← これ追加！（Firestore用ID）
     date: string;
     time: string;
     memo: string;
@@ -37,7 +37,10 @@ type LogItem = {
 };
 
 const HealthLogApp = () => {
-    
+    // 季節テーマの取得
+    const season = getSeason();
+    const theme = seasonThemes[season];
+
     // ステート管理
     const [memo, setMemo] = useState<string>("");
     const [meds, setMeds] = useState<Meds>({
@@ -51,19 +54,19 @@ const HealthLogApp = () => {
     const [todayMessage, setTodayMessage] = useState("");
 
     // 追加
-const [user, setUser] = useState(null);
-
-useEffect(() => {
-  const unsub = onAuthStateChanged(auth, (firebaseUser) => {
-    setUser(firebaseUser);
-    console.log("✅ ログイン中のユーザー:", firebaseUser?.email, "uid:", firebaseUser?.uid);
-  });
-  return () => unsub();
-}, []);
+    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-      const random = Math.floor(Math.random() * messages.length);
-      setTodayMessage(messages[random]);
+        const unsub = onAuthStateChanged(auth, (firebaseUser) => {
+            setUser(firebaseUser);
+            console.log("✅ ログイン中のユーザー:", firebaseUser?.email, "uid:", firebaseUser?.uid);
+        });
+        return () => unsub();
+    }, []);
+
+    useEffect(() => {
+        const random = Math.floor(Math.random() * messages.length);
+        setTodayMessage(messages[random]);
     }, []);
 
     // Firestoreからログ取得（初回だけ実行）
@@ -114,44 +117,44 @@ useEffect(() => {
     // 記録処理
     const handleSubmit = async () => {
         const now = new Date();
-        const newLog: LogItem = {
-          date: now.toLocaleDateString(),
-          time: now.toLocaleTimeString(),
-          memo,
-          meds,
-          pollenLevel,
-          uid: user?.uid || "",
+        const newLog: Omit<LogItem, "id"> = {
+            date: now.toLocaleDateString(),
+            time: now.toLocaleTimeString(),
+            memo,
+            meds,
+            pollenLevel,
+            uid: user?.uid || "",
         };
-      
+
         if (editIndex !== null) {
-          const editedLog = { ...newLog, id: logList[editIndex].id, uid: user?.uid || "" };
-      
-          setLogList((prev) => {
-            const updated = [...prev];
-            updated[editIndex] = editedLog;
-            return updated;
-          });
-          setEditIndex(null);
-      
-          if (editedLog.id) {
-            await updateHealthLog(editedLog.id, editedLog);
-            const updatedLogs = await fetchHealthLogs(user?.uid || "");
-            setLogList(updatedLogs as LogItem[]);
-            alert("編集されました！");
-          }
+            const editedLog = { ...newLog, id: logList[editIndex].id, uid: user?.uid || "" };
+
+            setLogList((prev) => {
+                const updated = [...prev];
+                updated[editIndex] = editedLog;
+                return updated;
+            });
+            setEditIndex(null);
+
+            if (editedLog.id) {
+                await updateHealthLog(editedLog.id, editedLog);
+                const updatedLogs = await fetchHealthLogs(user?.uid || "");
+                setLogList(updatedLogs as LogItem[]);
+                alert("編集されました！");
+            }
         } else {
-          const id = await saveHealthLog(newLog); // ← id を受け取る
-          if (id) {
-            setLogList((prev) => [...prev, { ...newLog, id }]); // ← id付きで保存
-            alert("記録されました！");
-          }
+            const id = await saveHealthLog(newLog); // ← id を受け取る
+            if (id) {
+                setLogList((prev) => [...prev, { ...newLog, id }]); // ← id付きで保存
+                alert("記録されました！");
+            }
         }
-      
+
         setMemo("");
         setMeds({ asacol: false, clearmin: false, ebios: false });
         setPollenLevel("");
-        
-      };
+
+    };
 
     // 編集処理
     const handleEdit = (index: number) => {
@@ -196,7 +199,7 @@ useEffect(() => {
     return (
         <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
             <style>
-{`
+                {`
   textarea {
     font-size: 16px;
     padding: 12px;
@@ -262,17 +265,46 @@ useEffect(() => {
     }
   }
 `}
-</style>
-            <h2>体調記録アプリ</h2>
-            <p style={{ fontSize: "18px", color: "#666", marginBottom: "10px" }}>{todayMessage}</p>
+            </style>
+            <p style={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                marginBottom: "1rem",
+                textAlign: "center",
+            }}>
+                {theme.message}
+            </p>
+            <h1
+                style={{
+                    fontSize: "2rem",
+                    marginBottom: "0.5rem",
+                    textAlign: "center",
+                }}
+            >体調記録アプリ</h1>
+            <p style={{
+                fontSize: "1rem",
+                fontStyle: "italic",
+                color: theme.color,
+                textAlign: "center",
+                marginBottom: "2rem",
+            }}>{todayMessage}</p>
 
             {/* ✅ カレンダーをここに追加 */}
-            <Calendar
-                className="calendar"
-                onChange={setSelectedDate}
-                value={selectedDate}
-                style={{ marginBottom: "20px" }}
-            />
+            <div style={{ marginBottom: "20px" }}>
+                <Calendar
+                    className="calendar"
+                    onChange={(value) => {
+                        if (value instanceof Date) {
+                            setSelectedDate(value); // 単一日選択
+                        } else if (Array.isArray(value) && value[0] instanceof Date) {
+                            setSelectedDate(value[0]); // 範囲選択時の先頭
+                        } else {
+                            setSelectedDate(null); // 想定外
+                        }
+                    }}
+                    value={selectedDate}
+                />
+            </div>
 
             {filteredLogs.length > 0 ? (
                 filteredLogs.map((log, index) => (

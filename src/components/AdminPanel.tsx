@@ -34,8 +34,8 @@ const AdminPanel = () => {
         const q = query(collection(db, "healthLogs"), where("uid", "==", user.uid));
         const snapshot = await getDocs(q);
         const fetchedLogs = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...(doc.data() as LogItem),
+          ...(doc.data() as Omit<LogItem, "id">), // ← idを省いた型にする
+          id: doc.id, // ← 最後に上書き
         }));
         setLogs(fetchedLogs);
       } catch (err) {
