@@ -16,13 +16,4 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
-// 匿名ログイン
-signInAnonymously(auth)
-  .then(() => {
-    console.log("✅ 匿名ログイン成功");
-  })
-  .catch((error) => {
-    console.error("❌ 匿名ログイン失敗:", error);
-  });
-
   
