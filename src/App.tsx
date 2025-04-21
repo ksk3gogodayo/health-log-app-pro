@@ -8,10 +8,24 @@ import SignUp from "./SignUp"; // 新しく追加されたインポート
 import { getSeason } from "./lib/getSeason";
 import { seasonThemes } from "./lib/theme";
 
-const season = getSeason();
-const theme = seasonThemes[season];
-
 const App = () => {
+  const season = getSeason();
+  const theme = seasonThemes[season];
+
+  const [mode, setMode] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const listener = (e: MediaQueryListEvent) => setMode(e.matches ? "dark" : "light");
+
+    setMode(mq.matches ? "dark" : "light");
+    mq.addEventListener("change", listener);
+
+    return () => mq.removeEventListener("change", listener);
+  }, []);
+
+  const fontColor = mode === "dark" ? theme.darkColor : theme.lightColor;
+
   const [user, setUser] = useState<User | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -32,7 +46,7 @@ const App = () => {
     <div
       style={{
         background: theme.background,       // ←ここ変更点！
-        color: theme.color,                 // ←ここもcolorに合わせる！
+        color: fontColor,
         minHeight: "100vh",
         padding: "1rem",
         backgroundSize: "cover",            // 背景画像表示のために追加
@@ -45,9 +59,14 @@ const App = () => {
         </>
       ) : (
         <>
-          {/* <p style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-            {theme.message}
-          </p> */}
+          <p style={{
+            fontSize: "1.2rem",
+            fontWeight: "bold",
+            color: fontColor, // ✅ カンマ追加
+            textAlign: "center",
+            textShadow: "0 0 4px rgba(0,0,0,0.5)"
+          }}>            {theme.message}
+          </p>
           <button onClick={() => signOut(auth)}>ログアウト</button>
           <HealthLogApp />
         </>

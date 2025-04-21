@@ -1,6 +1,5 @@
 // src/Login.tsx
-import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { useState, useEffect } from "react";import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase";
 import SignUp from "./SignUp";
 import { getSeason } from "./lib/getSeason";
@@ -9,6 +8,21 @@ import { seasonThemes } from "./lib/theme";
 const Login = () => {
   const season = getSeason();
   const theme = seasonThemes[season];
+
+  const [mode, setMode] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const listener = (e: MediaQueryListEvent) => setMode(e.matches ? "dark" : "light");
+  
+    setMode(mq.matches ? "dark" : "light");
+    mq.addEventListener("change", listener);
+  
+    return () => mq.removeEventListener("change", listener);
+  }, []);
+
+  const fontColor = mode === "dark" ? theme.darkColor : theme.lightColor;
+
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,7 +47,7 @@ const Login = () => {
           backgroundPosition: "center",
           minHeight: "100vh",
           padding: "2rem",
-          color: theme.color,
+          color: fontColor,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -74,7 +88,7 @@ const Login = () => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        color: theme.color,
+        color: fontColor,
         padding: "2rem",
       }}
     >

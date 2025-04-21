@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // スタイル読み込み
 import { fetchHealthLogs, saveHealthLog, deleteHealthLog, updateHealthLog } from "../lib/firestore";
-
 import { auth } from "../firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { getSeason, seasonThemes } from "lib/theme";
@@ -40,6 +39,17 @@ const HealthLogApp = () => {
     // 季節テーマの取得
     const season = getSeason();
     const theme = seasonThemes[season];
+
+    const [mode, setMode] = useState<"light" | "dark">("light");
+    useEffect(() => {
+        const mq = window.matchMedia("(prefers-color-scheme: dark)");
+        const listener = (e: MediaQueryListEvent) => setMode(e.matches ? "dark" : "light");
+        setMode(mq.matches ? "dark" : "light");
+        mq.addEventListener("change", listener);
+        return () => mq.removeEventListener("change", listener);
+    }, []);
+
+    const fontColor = mode === "dark" ? theme.darkColor : theme.lightColor;
 
     // ステート管理
     const [memo, setMemo] = useState<string>("");
@@ -284,7 +294,7 @@ const HealthLogApp = () => {
             <p style={{
                 fontSize: "1rem",
                 fontStyle: "italic",
-                color: theme.color,
+                color: fontColor,
                 textAlign: "center",
                 marginBottom: "2rem",
             }}>{todayMessage}</p>
