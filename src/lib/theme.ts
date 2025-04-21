@@ -13,7 +13,7 @@ export const getMode = () => {
 export const seasonThemes = {
   spring: {
     lightColor: "#333333", // ライトモード用：読みやすい濃グレー
-    darkColor: "#ffccdd",   // ダークモード用：やさしい春ピンク
+    darkColor: "#ffffff",  // ← ここ変更！
     message: "🌸 春：新しい気持ちで、ゆっくりスタート",
     background: "url(/spring.jpg)",
   },

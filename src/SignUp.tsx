@@ -1,7 +1,8 @@
 // src/SignUp.tsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getSeason } from "./lib/getSeason";
+import { seasonThemes } from "./lib/theme";
 
 type Props = {
   setShowLogin: () => void;
@@ -14,11 +15,27 @@ const seasonIconMap = {
   autumn: "🍁",
   winter: "❄️",
 } as const;
+
 const seasonIcon = seasonIconMap[season];
 
 const SignUp = ({ setShowLogin }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // SignUp.tsx の中で mode を使いたいなら
+  const [mode, setMode] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const listener = (e: MediaQueryListEvent) =>
+      setMode(e.matches ? "dark" : "light");
+    setMode(mq.matches ? "dark" : "light");
+    mq.addEventListener("change", listener);
+    return () => mq.removeEventListener("change", listener);
+  }, []);
+
+  const theme = seasonThemes[season]; // 先にこれを定義！
+  const fontColor = mode === "dark" ? theme.darkColor : theme.lightColor; //ほんまや
 
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +49,7 @@ const SignUp = ({ setShowLogin }: Props) => {
         flexDirection: "column",
         alignItems: "center",
         gap: "1rem",
+        color: fontColor, // ← ここを追加
       }}
     >
       {/* 🌸 新しく始める（フォームの外） */}
