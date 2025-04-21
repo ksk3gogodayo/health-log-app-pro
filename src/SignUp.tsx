@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import { getSeason } from "./lib/getSeason";
 import { seasonThemes } from "./lib/theme";
+// 🔻 これを冒頭で忘れず追加！
+import { auth } from "./firebase"; // Firebase初期化ファイルからauthをインポート
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 type Props = {
   setShowLogin: () => void;
@@ -37,9 +40,19 @@ const SignUp = ({ setShowLogin }: Props) => {
   const theme = seasonThemes[season]; // 先にこれを定義！
   const fontColor = mode === "dark" ? theme.darkColor : theme.lightColor; //ほんまや
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     // ユーザー登録処理（略）
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert("登録完了しました！");
+    } catch (error: any) {
+      if (error.code === "auth/email-already-in-use") {
+        alert("このメールアドレスはすでに登録されています。ログイン画面からお試しください。");
+      } else {
+        alert("登録に失敗しました：" + error.message);
+      }
+    }
   };
 
   return (
