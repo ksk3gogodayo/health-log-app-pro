@@ -42,6 +42,8 @@ const App = () => {
     return <div>読み込み中...</div>;
   }
 
+  const today = new Date().toLocaleDateString("ja-JP");
+
   return (
     <div
       style={{
@@ -67,7 +69,10 @@ const App = () => {
             textShadow: "0 0 4px rgba(0,0,0,0.5)"
           }}>            {theme.message}
           </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "20px", fontSize: "14px", color: "#666" }}>
           <button onClick={() => signOut(auth)}>ログアウト</button>
+          </div>
+          <div>今日の日付: {today}</div>
           <HealthLogApp />
         </>
       )}
