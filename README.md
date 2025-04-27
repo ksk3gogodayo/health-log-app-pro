@@ -1,126 +1,55 @@
-# Health Log App
+# Health Log App（体調記録アプリ）
 
-![React](https://img.shields.io/badge/React-v19.1-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-Yes-blueviolet)
-![Firebase](https://img.shields.io/badge/Firebase-Firestore-yellow)
-![License](https://img.shields.io/badge/License-MIT-green)
+日々の体調や服薬状況を手軽に記録・振り返りできる、個人開発のWebアプリです。
 
-## 🩺 アプリ概要
-
-「Health Log App」は、毎日の体調・服薬・花粉レベルなどを記録し、  
-Markdown形式での振り返りや共有ができるシンプルなログアプリです。  
-自分の体調の変化を可視化し、再燃や不調を早期に察知することを目的としています。
-
-## 🚀 アプリURL（Vercel）
-
-▶️ [https://health-log-app.vercel.app](https://health-log-app.vercel.app)
-
-## 📸 スクリーンショット
-
-<p align="center">
-  <img src="public/screenshot01.png" width="300" alt="アプリ画面1" />
-  <img src="public/screenshot02.png" width="300" alt="アプリ画面2" />
-</p>
-
-## 🔧 セットアップ手順
-
-```bash
-git clone https://github.com/ksk3gogodayo/health-log-app.git
-cd health-log-app
-npm install
-
-.env ファイルをルートディレクトリに作成し、Firebaseの設定値を記述してください：
-REACT_APP_FIREBASE_API_KEY=...
-REACT_APP_FIREBASE_AUTH_DOMAIN=...
-REACT_APP_FIREBASE_PROJECT_ID=...
-REACT_APP_FIREBASE_STORAGE_BUCKET=...
-REACT_APP_FIREBASE_MESSAGING_SENDER_ID=...
-REACT_APP_FIREBASE_APP_ID=...
-
-起動：
-npm start
-
-## 🛠 使用技術
-
-- React（Create React App）
-- TypeScript
-- Firebase Firestore
-- Vercel（ホスティング）
-- React Calendar
-- Markdown変換（手動生成）
-
-## 📝 機能一覧（今後追記）
-
-- 日付ごとの体調メモ入力
-- 薬チェック機能（アサコール・クリアミン・エビオス）
-- 花粉レベル入力
-- Firestore保存・取得・更新・削除
-- Markdownでコピー機能
-- モバイル対応（iOS調整含む）
+「使いやすくて、ちゃんと続けられる」体調ログを目指して、React と Firebase を使って開発しました。
 
 ---
 
-## 🛡 セキュリティについて（Firestoreのルール）
+## アプリURL
 
-現在は Firebase Authentication を導入し、  
-Firestore 上のログはユーザーごとの UID によって読み書きを制限しています。  
-
-Firestore Security Rules：
-```js
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /healthLogs/{logId} {
-      allow read, write: if request.auth != null && request.auth.uid == request.resource.data.uid;
-    }
-  }
-}
-```
-
-この設定により、ログインユーザーは自分のデータのみにアクセス可能です。  
-他人の記録を取得・編集・削除することはできません。
+- アプリ本体：https://health-log-app.vercel.app/
+- ポートフォリオ解説ページ（Notion）：https://succulent-tent-197.notion.site/Health-Log-App-1d9f91f28e9280ad9f8cc58e7027158a
 
 ---
 
-## 🧳 バックアップ・データ管理構想
+## 使用技術スタック
 
-- ログデータを Markdown / JSON 形式で出力（現在はMarkdownコピー機能あり）
-- ローカル保存と Firestore 保存の切替（将来的にオプション化も検討）
-- Obsidian やお薬手帳アプリ（例：Point）との使い分け・連携を意識
-
----
-
-## 🌈 将来の展望・追加予定機能
-
-- 「🌟 今日のひとこと」ランダム表示（実装済み）
-- カレンダーで日付ごとの絞り込み（実装済み）
-- ダークモード対応（実装済み）
-- グラフ化による体調変化の可視化
-- PWA化対応（ホーム画面追加やオフライン使用）
-- 限定リンク共有による「家族に見せられる記録」対応
-- Firestore以外のストレージ選択肢（将来的な有料プラン回避に向けて）
+- Frontend：React（TypeScript）
+- Backend / DB：Firebase（Cloud Firestore, Authentication）
+- Hosting：Vercel
 
 ---
 
-## 🗒 その他メモ
+## 主な機能
 
-- `.env` は `.gitignore` により Git に含まれません（安全性保持）
-- Firebase の設定値は Vercel 上の環境変数として個別に登録
-- GitHub上のコードには Firebase 情報や個人データは含まれません
-
-⸻
-
-## 📄 ライセンス
-
-このプロジェクトは [MIT ライセンス](./LICENSE) のもとで公開されています。
+- 体調メモ＋薬チェックの記録入力（複数の薬に対応）
+- ログの一覧表示（Firestoreと連携）
+- 匿名ログインによるユーザー識別
+- 日付ごとの記録をカレンダーから確認可能
+- 季節ごとのテーマ切り替え（色・メッセージ）
+- Markdown形式での出力（開発中）
 
 ---
 
-## 🙋‍♂️ 作者
+## 今後の予定
 
-けい  
+- 編集／削除機能のUI改善
+- 薬のカスタム登録と管理機能
+- 花粉レベルの自動取得・表示
+- ダークモード対応
+- より柔軟なスマホ表示最適化
 
-GitHub: [https://github.com/ksk3gogodayo](https://github.com/ksk3gogodayo)  
-X（旧Twitter）: [https://twitter.com/ksk3gogodayo](https://twitter.com/ksk3gogodayo)  
+---
 
-※Xは現在あまり稼働していませんが、お気軽にどうぞ！
+## ライセンス
+
+このリポジトリは個人開発目的のため、特にライセンス制限は設けていません。  
+内容を参考にしていただくのは自由です。フィードバックなど歓迎です！
+
+---
+
+## 開発・運用者
+
+**池上 慶亮 / Keisuke Ikegami**  
+技術習得と転職活動の一環として、本アプリを開発・公開しています。
