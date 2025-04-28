@@ -1,55 +1,58 @@
-# Health Log App（体調記録アプリ）
+Health Log App（体調記録アプリ）
 
 日々の体調や服薬状況を手軽に記録・振り返りできる、個人開発のWebアプリです。
-
 「使いやすくて、ちゃんと続けられる」体調ログを目指して、React と Firebase を使って開発しました。
 
----
+⸻
 
-## アプリURL
+概要
 
-- アプリ本体：https://health-log-app.vercel.app/
-- ポートフォリオ解説ページ（Notion）：https://succulent-tent-197.notion.site/Health-Log-App-1d9f91f28e9280ad9f8cc58e7027158a
+Health Log Appは、体調・服薬・気分を簡単に記録できる個人向けヘルスログアプリです。
+日々の体調変化を手軽に記録し、スマホやPCからいつでも振り返ることができます。
+生活習慣の見直しや、病院での説明資料としても活用できます。
 
----
+⸻
 
-## 使用技術スタック
+アプリURL
+	•	アプリ本体：https://health-log-app.vercel.app/
+	•	ポートフォリオ解説ページ（Notion）：https://succulent-tent-197.notion.site/Health-Log-App-1d9f91f28e9280ad9f8cc58e7027158a
 
-- Frontend：React（TypeScript）
-- Backend / DB：Firebase（Cloud Firestore, Authentication）
-- Hosting：Vercel
+⸻
 
----
+使用技術スタック
+	•	Frontend：React（TypeScript）
+	•	Backend / DB：Firebase（Cloud Firestore, Authentication）
+	•	Hosting：Vercel
 
-## 主な機能
+⸻
 
-- 体調メモ＋薬チェックの記録入力（複数の薬に対応）
-- ログの一覧表示（Firestoreと連携）
-- 匿名ログインによるユーザー識別
-- 日付ごとの記録をカレンダーから確認可能
-- 季節ごとのテーマ切り替え（色・メッセージ）
-- Markdown形式での出力（開発中）
+主な機能
+	•	体調メモ＋薬チェックの記録入力（複数の薬に対応）
+	•	ログの一覧表示（Firestoreと連携）
+	•	匿名ログインによるユーザー識別
+	•	日付ごとの記録をカレンダーから確認可能
+	•	季節ごとのテーマ切り替え（色・メッセージ）
+	•	Markdown形式での出力（開発中）
 
----
+⸻
 
-## 今後の予定
+今後の予定
+	•	編集／削除機能のUI改善
+	•	薬のカスタム登録と管理機能
+	•	花粉レベルの自動取得・表示
+	•	ダークモード対応
+	•	より柔軟なスマホ表示最適化
 
-- 編集／削除機能のUI改善
-- 薬のカスタム登録と管理機能
-- 花粉レベルの自動取得・表示
-- ダークモード対応
-- より柔軟なスマホ表示最適化
+⸻
 
----
+ライセンス
 
-## ライセンス
-
-このリポジトリは個人開発目的のため、特にライセンス制限は設けていません。  
+このリポジトリは個人開発目的のため、特にライセンス制限は設けていません。
 内容を参考にしていただくのは自由です。フィードバックなど歓迎です！
 
----
+⸻
 
-## 開発・運用者
+開発・運用者
 
-**池上 慶亮 / Keisuke Ikegami**  
+池上 慶亮 / Keisuke Ikegami
 技術習得と転職活動の一環として、本アプリを開発・公開しています。
