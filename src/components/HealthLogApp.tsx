@@ -126,10 +126,13 @@ const HealthLogApp = () => {
 
     // 記録処理
     const handleSubmit = async () => {
+        console.log("🟡 handleSubmit 実行されたよ！");
         const now = new Date();
+        console.log("🛠 editIndex:", editIndex);
+        console.log("🛠 対象ログ:", logList[editIndex ?? -1]);
         const newLog: Omit<LogItem, "id"> = {
-            date: now.toLocaleDateString(),
-            time: now.toLocaleTimeString(),
+            date: editIndex !== null ? logList[editIndex].date : now.toLocaleDateString(),
+            time: editIndex !== null ? logList[editIndex].time : now.toLocaleTimeString(),
             memo,
             meds,
             pollenLevel,
@@ -151,6 +154,7 @@ const HealthLogApp = () => {
                 const updatedLogs = await fetchHealthLogs(user?.uid || "");
                 setLogList(updatedLogs as LogItem[]);
                 alert("編集されました！");
+                setEditTargetId(null);
             }
         } else {
             const id = await saveHealthLog(newLog); // ← id を受け取る
@@ -166,13 +170,17 @@ const HealthLogApp = () => {
 
     };
 
+    const [editTargetId, setEditTargetId] = useState<string | null>(null);
+
     // 編集処理
-    const handleEdit = (index: number) => {
-        const log = logList[index];
-        setMemo(log.memo);
-        setMeds(log.meds);
-        setPollenLevel(log.pollenLevel);
-        setEditIndex(index); // ← これで「編集中」にする！
+    const handleEdit = (id: string) => {
+        const log = logList.find((log) => log.id === id);
+        if (log) {
+            setMemo(log.memo);
+            setMeds(log.meds);
+            setPollenLevel(log.pollenLevel);
+            setEditTargetId(log.id);  // `id` をセット
+        }
     };
 
     // 削除処理
@@ -336,7 +344,7 @@ const HealthLogApp = () => {
                             </strong>
                             <div style={{ display: "flex", gap: "10px" }}>
                                 <button
-                                    onClick={() => handleEdit(index)}
+                                    onClick={() => handleEdit(log.id)}  // ← log.id を渡す
                                     style={{
                                         backgroundColor: "#007bff",
                                         color: "white",
