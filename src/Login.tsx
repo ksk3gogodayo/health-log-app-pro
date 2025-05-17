@@ -5,6 +5,9 @@ import SignUp from "./SignUp";
 import { getSeason } from "./lib/getSeason";
 import { seasonThemes } from "./lib/theme";
 
+const guestEmail = "guest@example.com";
+const guestPassword = "guest1234";
+
 const Login = () => {
   const season = getSeason();
   const theme = seasonThemes[season];
@@ -35,6 +38,15 @@ const Login = () => {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
       setError("ログインに失敗しました！");
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    try {
+      await signInWithEmailAndPassword(auth, guestEmail, guestPassword);
+      // ログイン後の遷移（既存のままでOK）
+    } catch (error) {
+      alert("ゲストログインに失敗しました");
     }
   };
 
@@ -157,6 +169,11 @@ const Login = () => {
             }}
           >
             新規登録
+          </button>
+
+          {/* ...既存のログインUI */}
+          <button onClick={handleGuestLogin}>
+            ゲストログイン
           </button>
         </p>
       </form>
