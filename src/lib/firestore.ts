@@ -11,46 +11,46 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { LogItem } from "../types";
-
-
-type LogItem = {
-  id: string;
-  date: string;
-  time: string;
-  memo: string;
-  pollenLevel: string;
-  meds: {
-    asacol: boolean;
-    clearmin: boolean;
-    ebios: boolean;
-  };
-  uid: string;
-};
+import { LogItem, NewLogItem } from "../types";
 
 // AdminPanel component has been removed from this file
 
-// 🔸 新規作成（id 自動生成）
-export const saveNewHealthLog = async (log: Omit<LogItem, "id">) => {
+// // 🔸 新規作成（id 自動生成）
+// export const saveNewHealthLog = async (log: Omit<LogItem, "id">) => {
+//   const uid = auth.currentUser?.uid;
+//   if (!uid) throw new Error("未ログイン");
+
+//   const id = Date.now().toString(); // ← ここで id を作る
+//   const logWithUid = { ...log, id, uid };
+
+//   const docRef = doc(db, "healthLogs", id);
+//   await setDoc(docRef, logWithUid);
+//   return id;
+// };
+
+// 新規ログを作成（idを生成）
+export const saveNewHealthLog = async (log: NewLogItem) => {
   const uid = auth.currentUser?.uid;
   if (!uid) throw new Error("未ログイン");
 
-  const id = Date.now().toString(); // ← ここで id を作る
-  const logWithUid = { ...log, id, uid };
+  const id = Date.now().toString(); // ← ローカルでID生成
+  const logWithUid = { ...log, uid };
 
   const docRef = doc(db, "healthLogs", id);
   await setDoc(docRef, logWithUid);
   return id;
 };
 
-// 🔸 既存ログの更新
+// 既存ログを上書き保存（編集）
 export const saveHealthLog = async (log: LogItem) => {
   const uid = auth.currentUser?.uid;
   if (!uid) throw new Error("未ログイン");
 
   const logWithUid = { ...log, uid };
+
   const docRef = doc(db, "healthLogs", log.id);
   await setDoc(docRef, logWithUid);
+
   return log.id;
 };
 

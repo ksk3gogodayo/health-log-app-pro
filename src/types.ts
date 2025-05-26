@@ -15,3 +15,5 @@ export interface LogItem {
   pollenLevel: PollenLevel;
   uid: string;
 }
+
+export type NewLogItem = Omit<LogItem, "id">;

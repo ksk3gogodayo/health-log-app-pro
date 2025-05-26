@@ -1,6 +1,6 @@
 // components/healthLog/HealthLogForm.tsx
 import React from "react";
-import { PollenLevel } from "../../types";
+import { PollenLevel, LogItem } from "../../types";
 
 type Meds = {
   asacol: boolean;
@@ -17,7 +17,7 @@ type Props = {
   onPollenLevelChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onSave: () => void;
   onCancel: () => void;
-  editTargetId: string | null;
+  editTarget: LogItem | null;
 };
 
 const HealthLogForm: React.FC<Props> = ({
@@ -29,8 +29,15 @@ const HealthLogForm: React.FC<Props> = ({
   onPollenLevelChange,
   onSave,
   onCancel,
-  editTargetId,
-}) => {
+  editTarget,
+}: Props) => {
+  const buttonStyle = {
+    backgroundColor: editTarget ? "#ffc107" : "#007bff", // 黄色 or 青
+    color: "white",
+    padding: "10px",
+    borderRadius: "4px",
+    border: "none",
+  };
   return (
     <div>
       {/* 体調メモ */}
@@ -91,10 +98,16 @@ const HealthLogForm: React.FC<Props> = ({
 
       {/* 記録ボタン */}
       <div style={{ display: "flex", gap: "10px", marginTop: "10px", marginBottom: "10px" }}>
-        {editTargetId ? (
+        {editTarget ? (
           <>
-            <button onClick={onSave}>保存</button>
-            <button onClick={onCancel}>キャンセル</button>
+            <button style={buttonStyle} onClick={onSave}>
+              {editTarget ? "編集する" : "記録する"}
+            </button>
+            {editTarget && (
+              <button onClick={onCancel}>
+                編集キャンセル
+              </button>
+            )}
           </>
         ) : (
           <button onClick={onSave}>新規作成</button>

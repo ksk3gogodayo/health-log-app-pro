@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // スタイル読み込み
-import { fetchHealthLogs, saveHealthLog, deleteHealthLog, updateHealthLog } from "../lib/firestore";
+import { fetchHealthLogs, saveNewHealthLog, saveHealthLog, deleteHealthLog, updateHealthLog } from "../lib/firestore";
 import { auth } from "../firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { getSeason, seasonThemes } from "lib/theme";
 import HealthLogForm from "../components/healthLog/HealthLogForm";
 import HealthLogList from "../components/healthLog/HealthLogList";
-import { LogItem, Meds, PollenLevel } from "../types"; // パスは必要に応じて調整
+import { LogItem, NewLogItem, Meds, PollenLevel } from "../types"; // パスは必要に応じて調整
 
 
 type CalendarValue = Date | Date[] | null;
@@ -46,9 +46,12 @@ const HealthLogApp = () => {
         clearmin: false,
         ebios: false,
     });
+    const [date, setDate] = useState<string>("");
+    const [time, setTime] = useState<string>("");
     const [pollenLevel, setPollenLevel] = useState<PollenLevel | "">("");
     const [logList, setLogList] = useState<LogItem[]>([]);
     const [todayMessage, setTodayMessage] = useState("");
+    const [editTarget, setEditTarget] = useState<LogItem | null>(null);
 
     // 追加
     const [user, setUser] = useState<User | null>(null);
@@ -132,8 +135,7 @@ const HealthLogApp = () => {
             day: "2-digit",
         });
 
-        console.log("🛠 editTargetId:", editTargetId);
-        console.log("🛠 対象ログ:", logList.find((log) => log.id === editTargetId));
+        console.log("🛠 editTarget:", editTarget);
         const newLog: Omit<LogItem, "id"> = {
             date: now.toISOString().split("T")[0], // YYYY-MM-DD 形式
             time: now.toLocaleTimeString(),
@@ -143,18 +145,17 @@ const HealthLogApp = () => {
             uid: user?.uid || "",
         };
 
-        if (editTargetId) {
-            const editedLog = { ...newLog, id: editTargetId, uid: user?.uid || "" };
-            await updateHealthLog(editedLog.id, editedLog);
+        if (editTarget) {
+            const editedLog = { ...editTarget, ...newLog }; await updateHealthLog(editedLog.id, editedLog);
             const updatedLogs = await fetchHealthLogs(user?.uid || "");
             setLogList(updatedLogs);
             alert("編集されました！");
-            setEditTargetId(null);
-          } else {
+            setEditTarget(null);
+        } else {
             const id = await saveNewHealthLog(newLog); // ← id自動生成
             setLogList((prev) => [...prev, { ...newLog, id }]);
             alert("記録されました！");
-          }
+        }
 
         setMemo("");
         setMeds({ asacol: false, clearmin: false, ebios: false });
@@ -162,216 +163,68 @@ const HealthLogApp = () => {
 
     };
 
-    const [editTargetId, setEditTargetId] = useState<string | null>(null);
-
     // 編集中のログかどうかを判定するヘルパー関数を作る：
     const isEditing = (id: string) => {
-        return id === editTargetId;
+        return editTarget?.id === id;
     };
     // 編集処理
     const handleEdit = (id: string) => {
         const log = logList.find((log) => log.id === id);
         if (log) {
+            setEditTarget(log); // ← ここが主役！
             setMemo(log.memo);
             setMeds(log.meds);
             setPollenLevel(log.pollenLevel);
-            setEditTargetId(log.id!);  // `id` をセット
+            setDate(log.date);
+            setTime(log.time);
         }
-        // // 編集完了またはキャンセル時に editTargetId を null にリセット：
-        const handleSave = () => {
-            // 保存処理
-            setEditTargetId(null); // 編集終了
-        };
-
-        const handleCancel = () => {
-            setEditTargetId(null); // 編集終了
-        };
     };
-
-    // handleSave 関数を定義して、以下のように編集保存と新規作成を分ける：
-    // const handleSave = async () => {
-    //     // console.log("🟡 handleSave 実行開始！");
-    //     // const now = new Date();
-    //     // const formattedDate = now.toISOString().split("T")[0];
-    //     // const formattedTime = now.toLocaleTimeString();
-
-    //     // const newLogData: Omit<LogItem, "id"> = {
-    //     //     date: selectedDate || formattedDate,  // 選択日がある場合はそれを優先
-    //     //     time: formattedTime,
-    //     //     memo,
-    //     //     meds,
-    //     //     pollenLevel,
-    //     //     uid: user?.uid || "",
-    //     // };
-
-    //     // console.log("新規ログデータ:", newLogData);
-
-    //     if (!editTargetId) {
-    //         console.log("新規作成モード");
-
-    //         const newLog = {
-    //             id: Date.now().toString(),
-    //             memo,
-    //             meds,
-    //             pollenLevel,
-    //             date: selectedDate || new Date().toISOString().split("T")[0],  // ✅ ここで `selectedDate` を優先
-    //             time: new Date().toLocaleTimeString(),
-    //             uid: user?.uid || "",
-    //         };
-
-    //         console.log("新規作成データ:", newLog);
-
-    //         setLogList([...logList, newLog]);
-
-    //         try {
-    //             const id = await saveHealthLog(newLog);
-    //             console.log("Firestore 新規保存完了:", id);
-    //             alert("記録されました！");
-    //         } catch (error) {
-    //             console.error("🔥 Firestore保存エラー:", error);
-    //         }
-    //     }
-
-    //     if (editTargetId) {
-    //         console.log("編集モード");
-    //         const updatedLogList = logList.map((log) => {
-    //             if (log.id === editTargetId) {
-    //                 console.log("更新対象:", log.id);
-    //                 return {
-    //                     ...log,
-    //                     memo,
-    //                     meds,
-    //                     pollenLevel,
-    //                 };
-    //             }
-    //             return log;
-    //         });
-
-    //         setLogList(updatedLogList);
-
-    //         try {
-    //             await updateHealthLog(editTargetId, {
-    //                 ...newLogData,
-    //                 time: new Date().toLocaleTimeString(), // 更新時刻を上書き
-    //             });
-
-    //             console.log("Firestore 更新完了");
-    //             alert("編集されました！");
-    //         } catch (error) {
-    //             console.error("🔥 Firestore更新エラー:", error);
-    //         }
-
-    //     } else {
-    //         console.log("新規作成モード");
-
-    //         const newLog = {
-    //             ...newLogData,
-    //             id: Date.now().toString(),
-    //         };
-
-    //         setLogList([...logList, newLog]);
-
-    //         try {
-    //             const id = await saveHealthLog(newLog);
-    //             console.log("Firestore 新規保存完了:", id);
-    //             alert("記録されました！");
-    //         } catch (error) {
-    //             console.error("🔥 Firestore保存エラー:", error);
-    //         }
-    //     }
-
-    //     console.log("editTargetId:", editTargetId);
-
-    //     // 入力欄のリセット
-    //     setMemo("");
-    //     setMeds({ asacol: false, clearmin: false, ebios: false });
-    //     setPollenLevel("");
-    //     setEditTargetId(null);
-
-    //     // 選択日付の保持
-    //     if (selectedDate) {
-    //         console.log("編集完了時の選択日付:", selectedDate);
-    //         setSelectedDate(selectedDate); // これでリセットされないように保持
-    //     } else {
-    //         console.warn("選択日付が null のため保持されませんでした");
-    //     }
-
-    //     console.log("選択された日付:", selectedDate);
-    // };
 
     const handleSave = async () => {
         console.log("🟡 handleSave 実行開始！");
         const now = new Date();
-        const formattedDate = selectedDate ? padDate(selectedDate) : now.toISOString().split("T")[0];
         const formattedTime = now.toLocaleTimeString();
+        const formattedDate = selectedDate ? padDate(selectedDate) : now.toISOString().split("T")[0];
 
-        // ✅ newLogData を定義しておく
-        const newLogData = {
+        const commonData = {
             memo,
             meds,
             pollenLevel,
             date: formattedDate,
+            time: formattedTime,
             uid: user?.uid || "",
         };
 
-        if (editTargetId) {
-            console.log("編集モード");
+        try {
+            if (editTarget) {
+                // ✅ 編集モード
+                const updatedLog: LogItem = {
+                    ...editTarget,
+                    ...commonData,
+                };
 
-            const updatedLogList = logList.map((log) => {
-                if (log.id === editTargetId) {
-                    console.log("更新対象:", log.id);
-                    return {
-                        ...log,
-                        ...newLogData,
-                        time: formattedTime,
-                    };
-                }
-                return log;
-            });
-
-            setLogList(updatedLogList);
-
-            try {
-                await updateHealthLog(editTargetId, {
-                    ...newLogData,
-                    time: formattedTime, // 更新時刻を上書き
-                });
-
-                console.log("Firestore 更新完了");
+                await saveHealthLog(updatedLog);
+                const updatedLogs = await fetchHealthLogs(user?.uid || "");
+                setLogList(updatedLogs);
                 alert("編集されました！");
-            } catch (error) {
-                console.error("🔥 Firestore更新エラー:", error);
-            }
-
-        } else {
-            console.log("新規作成モード");
-
-            const newLog = {
-                ...newLogData,
-                id: Date.now().toString(),
-                time: formattedTime,
-            };
-
-            console.log("新規作成データ:", newLog);
-
-            setLogList([...logList, newLog]);
-
-            try {
-                const id = await saveHealthLog(newLog);
-                console.log("Firestore 新規保存完了:", id);
+                setEditTarget(null);
+            } else {
+                // ✅ 新規作成モード
+                const newLog: NewLogItem = { ...commonData };
+                const id = await saveNewHealthLog(newLog);
+                setLogList((prev) => [...prev, { ...newLog, id }]);
                 alert("記録されました！");
-            } catch (error) {
-                console.error("🔥 Firestore保存エラー:", error);
             }
+        } catch (error) {
+            console.error("🔥 Firestore保存エラー:", error);
         }
 
-        // 入力欄のリセット
+        // 入力リセット
         setMemo("");
         setMeds({ asacol: false, clearmin: false, ebios: false });
         setPollenLevel("");
-        setEditTargetId(null);
 
-        // 選択日付の保持
+        // 日付リセット（または保持）
         if (selectedDate) {
             console.log("編集完了時の選択日付:", selectedDate);
             setSelectedDate(selectedDate);
@@ -385,7 +238,7 @@ const HealthLogApp = () => {
         setMemo("");
         setMeds({ asacol: false, clearmin: false, ebios: false });
         setPollenLevel("");
-        setEditTargetId(null);  // 編集終了
+        setEditTarget(null);  // 編集終了
     };
 
     const handleDelete = async (index: number) => {
@@ -401,9 +254,6 @@ const HealthLogApp = () => {
 
             try {
                 await deleteHealthLog(log.id);
-                const logWithUid = { ...logDataWithoutId, uid };
-                const docRef = doc(db, "healthLogs", id);
-                await setDoc(docRef, logWithUid);
 
                 console.log("✅ Firestore削除成功:", log.id);
                 alert("Firestoreから削除されました！");
@@ -475,18 +325,18 @@ const HealthLogApp = () => {
 
     const padDate = (date: string) => {
         console.log("padDate 関数 - 受け取った日付:", date);
-      
+
         if (!date || date.trim() === "") {
-          console.warn("🚨 padDate 関数に無効な値が渡されました:", date);
-          return "日付未設定";
+            console.warn("🚨 padDate 関数に無効な値が渡されました:", date);
+            return "日付未設定";
         }
-      
+
         // スラッシュでもハイフンでも分割できるように
         const parts = date.split(/[-/]/);
         const year = parts[0]?.padStart(4, "0") || "0000";
         const month = parts[1]?.padStart(2, "0") || "00";
         const day = parts[2]?.padStart(2, "0") || "00";
-      
+
         const formattedDate = `${year}-${month}-${day}`;
         console.log("padDate 関数 - 変換後の日付:", formattedDate);
         return formattedDate;
@@ -496,9 +346,9 @@ const HealthLogApp = () => {
 
     // 過去ログ用
     const pastLogs = logList.filter((log) => {
-    // ①「過去ログ用」では logDate
-    const formattedDate = padDate(log.date);
-    return formattedDate < todayDate;
+        // ①「過去ログ用」では logDate
+        const formattedDate = padDate(log.date);
+        return formattedDate < todayDate;
     });
 
     // 選択日で絞り込み
@@ -634,14 +484,9 @@ const HealthLogApp = () => {
                 isEditing={isEditing}
             />
 
-            {editTargetId && (
+            {editTarget && (
                 <div>
-                    編集モード：
-                    {
-                        logList.find((log) => log.id === editTargetId)?.date
-                    } / {
-                        logList.find((log) => log.id === editTargetId)?.time
-                    } の記録を編集中
+                    編集モード：{editTarget.date} / {editTarget.time} の記録を編集中
                 </div>
             )}
 
@@ -654,7 +499,7 @@ const HealthLogApp = () => {
                 onPollenLevelChange={(e) => setPollenLevel(e.target.value as PollenLevel)}
                 onSave={handleSave}
                 onCancel={handleCancel}
-                editTargetId={editTargetId}
+                editTarget={editTarget}
             />
             <button
                 onClick={copyAllLogsMarkdown}
