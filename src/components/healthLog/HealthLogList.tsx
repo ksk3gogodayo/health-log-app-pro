@@ -21,7 +21,7 @@ type LogItem = {
 type Props = {
   logs: LogItem[];
   onEdit: (id: string) => void;
-  onDelete: (index: number) => void;
+  onDelete: (id: string) => void
   onCopyMarkdown: (log: LogItem) => void;
   isEditing: (id: string) => boolean;
 };
@@ -53,7 +53,7 @@ const HealthLogList: React.FC<Props> = ({ logs, onEdit, onDelete, onCopyMarkdown
                 borderRadius: "4px",
               }}>
                 <button onClick={() => onEdit(log.id)}>編集</button>
-                <button onClick={() => onDelete(index)}>削除</button>
+                <button onClick={() => onDelete(log.id)}>削除</button>
                 <button onClick={() => onCopyMarkdown(log)}>Markdownコピー</button>
               </div>
             </div>

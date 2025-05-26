@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // スタイル読み込み
-import { fetchHealthLogs, saveNewHealthLog, saveHealthLog, deleteHealthLog, updateHealthLog } from "../lib/firestore";
+import { fetchHealthLogs, saveNewHealthLog, saveHealthLog, deleteHealthLog, updateHealthLog, subscribeHealthLogs } from "../lib/firestore";
 import { auth } from "../firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { getSeason, seasonThemes } from "lib/theme";
@@ -52,6 +52,8 @@ const HealthLogApp = () => {
     const [logList, setLogList] = useState<LogItem[]>([]);
     const [todayMessage, setTodayMessage] = useState("");
     const [editTarget, setEditTarget] = useState<LogItem | null>(null);
+    // 🔸 追加: 保存中ステート
+    const [isSaving, setIsSaving] = useState(false);
 
     // 追加
     const [user, setUser] = useState<User | null>(null);
@@ -69,26 +71,39 @@ const HealthLogApp = () => {
         setTodayMessage(messages[random]);
     }, []);
 
-    // Firestoreからログ取得（初回だけ実行）
+    // Firestoreからログをサブスクライブ
+    // Firestoreからログをサブスクライブ
     useEffect(() => {
-        const loadLogs = async () => {
-            if (!user?.uid) return;
-            const fetchedLogs = (await fetchHealthLogs(user.uid)) as LogItem[];
+        if (!user?.uid) return;
 
-            const formattedLogs = fetchedLogs.map(log => {
-                const formattedDate = padDate(log.date);
-                console.log("変換前:", log.date, "変換後:", formattedDate);
-                return {
-                    ...log,
-                    date: formattedDate,
-                };
-            });
+        // デバッグ isolation: サブスクをfetchに切り替えたい場合は下記コメントアウトを解除
+        // (一時的にsubscribeHealthLogs→fetchHealthLogsで挙動を見る)
+        /*
+        (async () => {
+            const logs = await fetchHealthLogs(user.uid);
+            console.log("📦 Firestoreから取得したログ（fetch）:", logs);
+            setLogList(logs.map(log => ({
+                ...log,
+                date: padDate(log.date),
+            })));
+        })();
+        return;
+        */
 
+        const unsubscribe = subscribeHealthLogs(user.uid, (fetchedLogs: LogItem[]) => {
+            console.log("🔔 subscribeHealthLogs 実行中");
+            // このログは必ず毎回実行される
+            console.log("📦 Firestoreから取得したログ（サブスク）:", fetchedLogs);
+            const formattedLogs = fetchedLogs.map(log => ({
+                ...log,
+                date: padDate(log.date),
+            }));
             setLogList(formattedLogs);
-        };
+        });
 
-        loadLogs();
+        return () => unsubscribe();
     }, [user]);
+
 
 
     // 日付ステートを追加
@@ -153,7 +168,6 @@ const HealthLogApp = () => {
             setEditTarget(null);
         } else {
             const id = await saveNewHealthLog(newLog); // ← id自動生成
-            setLogList((prev) => [...prev, { ...newLog, id }]);
             alert("記録されました！");
         }
 
@@ -182,6 +196,7 @@ const HealthLogApp = () => {
 
     const handleSave = async () => {
         console.log("🟡 handleSave 実行開始！");
+        setIsSaving(true); // 🔸 追加
         const now = new Date();
         const formattedTime = now.toLocaleTimeString();
         const formattedDate = selectedDate ? padDate(selectedDate) : now.toISOString().split("T")[0];
@@ -212,11 +227,12 @@ const HealthLogApp = () => {
                 // ✅ 新規作成モード
                 const newLog: NewLogItem = { ...commonData };
                 const id = await saveNewHealthLog(newLog);
-                setLogList((prev) => [...prev, { ...newLog, id }]);
                 alert("記録されました！");
             }
         } catch (error) {
             console.error("🔥 Firestore保存エラー:", error);
+        } finally {
+            setIsSaving(false); // 🔸 追加
         }
 
         // 入力リセット
@@ -241,36 +257,23 @@ const HealthLogApp = () => {
         setEditTarget(null);  // 編集終了
     };
 
-    const handleDelete = async (index: number) => {
-        const log = logList[index];
-        console.log("🧾 削除対象ログ:", log);
+    const handleDelete = async (id: string) => {
+        const log = logList.find((log) => log.id === id);
+        if (!log) return;
+
+        console.log("削除対象のuid:", log.uid);
+        console.log("現在のユーザーuid:", user?.uid);
 
         if (!window.confirm("この記録を削除しますか？")) return;
 
-        if (log.id) {
-            console.log("🗑 Firestore削除実行:", log.id);
-            console.log("🛠 削除対象のuid:", log.uid);
-            console.log("🛠 現在のユーザーuid:", user?.uid);
-
-            try {
-                await deleteHealthLog(log.id);
-
-                console.log("✅ Firestore削除成功:", log.id);
-                alert("Firestoreから削除されました！");
-
-                // 🔄 Firestoreから再取得して、最新のログで更新！
-                const updatedLogs = await fetchHealthLogs(user?.uid || "");
-                setLogList(updatedLogs as LogItem[]);
-
-                // ローカルのログリストも更新
-                setLogList((prev) => prev.filter((_, i) => i !== index));
-
-            } catch (error) {
-                console.error("🔥 Firestore削除失敗:", error);
-                alert("Firestoreの削除に失敗しました！");
-            }
-        } else {
-            console.warn("❗ log.id が undefined なのでFirestore削除できない");
+        try {
+            await deleteHealthLog(id);
+            // 削除後にlogListから除外（サブスクでも消えるが、即時UI反映のため明示的にfilter）
+            setLogList((prev) => prev.filter((log) => log.id !== id));
+            alert("Firestoreから削除されました！");
+        } catch (error) {
+            console.error("削除失敗:", error);
+            alert("削除に失敗しました");
         }
     };
 
@@ -346,9 +349,10 @@ const HealthLogApp = () => {
 
     // 過去ログ用
     const pastLogs = logList.filter((log) => {
+        console.log("🧪 log.date:", log.date);
         // ①「過去ログ用」では logDate
         const formattedDate = padDate(log.date);
-        return formattedDate < todayDate;
+        return formattedDate !== "日付未設定" && formattedDate < todayDate;
     });
 
     // 選択日で絞り込み
@@ -499,7 +503,8 @@ const HealthLogApp = () => {
                 onPollenLevelChange={(e) => setPollenLevel(e.target.value as PollenLevel)}
                 onSave={handleSave}
                 onCancel={handleCancel}
-                editTarget={editTarget}
+                editTargetId={editTarget ? editTarget.id : null}
+                isSaving={isSaving} // 🔸 追加
             />
             <button
                 onClick={copyAllLogsMarkdown}
@@ -528,7 +533,7 @@ const HealthLogApp = () => {
                         <p>花粉レベル: {log.pollenLevel || "未入力"}</p>
                         <p>{log.memo}</p>
                         <button onClick={() => handleEdit(log.id)}>編集</button>
-                        <button onClick={() => handleDelete(logList.findIndex(l => l.id === log.id))}>削除</button>
+                        <button onClick={() => handleDelete(log.id)}>削除</button>
                     </div>
                 ))
             ) : (

@@ -1,23 +1,21 @@
-// components/healthLog/HealthLogForm.tsx
-import React from "react";
-import { PollenLevel, LogItem } from "../../types";
+// HealthLogForm.tsx はフォーム部分のコンポーネントとして設計されていたため、
+// 元の安定バージョンでは editTargetId などの状態管理は親で行い、
+// このコンポーネントは props で受け取っていた形に戻します。
 
-type Meds = {
-  asacol: boolean;
-  clearmin: boolean;
-  ebios: boolean;
-};
+import React from "react";
+import { LogItem, Meds, PollenLevel } from "../../types";
 
 type Props = {
   memo: string;
   meds: Meds;
-  pollenLevel: PollenLevel;
+  pollenLevel: PollenLevel | "";
   onMemoChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onMedsChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPollenLevelChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onSave: () => void;
+  onSave: () => Promise<void>;
   onCancel: () => void;
-  editTarget: LogItem | null;
+  isSaving?: boolean;
+  editTargetId?: string | null;
 };
 
 const HealthLogForm: React.FC<Props> = ({
@@ -29,28 +27,24 @@ const HealthLogForm: React.FC<Props> = ({
   onPollenLevelChange,
   onSave,
   onCancel,
-  editTarget,
-}: Props) => {
-  const buttonStyle = {
-    backgroundColor: editTarget ? "#ffc107" : "#007bff", // 黄色 or 青
-    color: "white",
-    padding: "10px",
-    borderRadius: "4px",
-    border: "none",
-  };
+  isSaving,
+  editTargetId,
+}) => {
   return (
-    <div>
-      {/* 体調メモ */}
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        await onSave();
+      }}
+    >
       <textarea
-        rows={3}
-        placeholder="今日の体調をひとことで..."
         value={memo}
         onChange={onMemoChange}
-        style={{ marginBottom: "0px" }}
+        placeholder="メモ"
+        rows={4}
+        style={{ width: "100%" }}
       />
-
-      {/* 薬チェック */}
-      <div style={{ marginTop: "10px" }}>
+      <div>
         <label>
           <input
             type="checkbox"
@@ -67,7 +61,7 @@ const HealthLogForm: React.FC<Props> = ({
             checked={meds.clearmin}
             onChange={onMedsChange}
           />
-          クリアミン
+          クレアミン
         </label>
         <label>
           <input
@@ -79,41 +73,24 @@ const HealthLogForm: React.FC<Props> = ({
           エビオス
         </label>
       </div>
-
-      {/* 花粉レベル */}
-      <div style={{ marginTop: "10px" }}>
-        <label>
-          花粉レベル：
-          <select
-            value={pollenLevel}
-            onChange={onPollenLevelChange}
-          >
-            <option value="">選択してください</option>
-            <option value="弱">弱</option>
-            <option value="中">中</option>
-            <option value="強">強</option>
-          </select>
-        </label>
+      <div>
+        <select value={pollenLevel} onChange={onPollenLevelChange}>
+          <option value="">花粉レベルを選択</option>
+          <option value="none">なし</option>
+          <option value="low">少ない</option>
+          <option value="medium">普通</option>
+          <option value="high">多い</option>
+        </select>
       </div>
-
-      {/* 記録ボタン */}
-      <div style={{ display: "flex", gap: "10px", marginTop: "10px", marginBottom: "10px" }}>
-        {editTarget ? (
-          <>
-            <button style={buttonStyle} onClick={onSave}>
-              {editTarget ? "編集する" : "記録する"}
-            </button>
-            {editTarget && (
-              <button onClick={onCancel}>
-                編集キャンセル
-              </button>
-            )}
-          </>
-        ) : (
-          <button onClick={onSave}>新規作成</button>
-        )}
+      <div>
+        <button type="submit" disabled={isSaving}>
+          {editTargetId ? "更新" : "保存"}
+        </button>
+        <button type="button" onClick={onCancel}>
+          キャンセル
+        </button>
       </div>
-    </div>
+    </form>
   );
 };
 

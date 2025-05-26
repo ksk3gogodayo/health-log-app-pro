@@ -9,36 +9,52 @@ import {
   deleteDoc,
   addDoc,
   setDoc,
+  Firestore,
+  QuerySnapshot,
+  onSnapshot,
+  getDocsFromServer
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { LogItem, NewLogItem } from "../types";
 
-// AdminPanel component has been removed from this file
+export const subscribeHealthLogs = (uid: string, onUpdate: (logs: LogItem[]) => void) => {
+  const q = query(collection(db, "healthLogs"), where("uid", "==", uid));
+  return onSnapshot(q, (snapshot) => {
+    console.log("📦 サブスクライブで受け取った snapshot:", snapshot.docs);
+    const logs = snapshot.docs.map(doc => {
+      console.log("📘 raw doc:", doc.data()); // ←これ入れて
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    }) as LogItem[];
+    onUpdate(logs);
+  });
+};
 
-// // 🔸 新規作成（id 自動生成）
-// export const saveNewHealthLog = async (log: Omit<LogItem, "id">) => {
-//   const uid = auth.currentUser?.uid;
-//   if (!uid) throw new Error("未ログイン");
-
-//   const id = Date.now().toString(); // ← ここで id を作る
-//   const logWithUid = { ...log, id, uid };
-
-//   const docRef = doc(db, "healthLogs", id);
-//   await setDoc(docRef, logWithUid);
-//   return id;
-// };
+export const fetchHealthLogs = async (uid: string) => {
+  try {
+    const q = query(collection(db, "healthLogs"), where("uid", "==", uid));
+    const snapshot = await getDocs(q);  // ← getDocsFromServer → getDocs に修正
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as LogItem[];
+  } catch (error) {
+    console.error("🔥 取得失敗", error);
+    return [];
+  }
+};
 
 // 新規ログを作成（idを生成）
 export const saveNewHealthLog = async (log: NewLogItem) => {
   const uid = auth.currentUser?.uid;
   if (!uid) throw new Error("未ログイン");
 
-  const id = Date.now().toString(); // ← ローカルでID生成
   const logWithUid = { ...log, uid };
 
-  const docRef = doc(db, "healthLogs", id);
-  await setDoc(docRef, logWithUid);
-  return id;
+  const docRef = await addDoc(collection(db, "healthLogs"), logWithUid); // ← 自動ID採用！
+  return docRef.id;
 };
 
 // 既存ログを上書き保存（編集）
@@ -52,23 +68,6 @@ export const saveHealthLog = async (log: LogItem) => {
   await setDoc(docRef, logWithUid);
 
   return log.id;
-};
-
-export const fetchHealthLogs = async (uid: string) => {
-  try {
-    const q = query(
-      collection(db, "healthLogs"),
-      where("uid", "==", uid)
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as LogItem[];
-  } catch (error) {
-    console.error("🔥 取得失敗", error);
-    return [];
-  }
 };
 
 export const updateHealthLog = async (id: string, data: any) => {
