@@ -7,9 +7,11 @@ import {
   doc,
   updateDoc,
   deleteDoc,
-  addDoc
+  addDoc,
+  setDoc,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { LogItem } from "../types";
 
 
 type LogItem = {
@@ -28,21 +30,28 @@ type LogItem = {
 
 // AdminPanel component has been removed from this file
 
-export const saveHealthLog = async (log: Omit<LogItem, "id">) => {  try {
-    const uid = auth.currentUser?.uid;
-    if (!uid) throw new Error("未ログイン");
+// 🔸 新規作成（id 自動生成）
+export const saveNewHealthLog = async (log: Omit<LogItem, "id">) => {
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw new Error("未ログイン");
 
-    const docRef = await addDoc(collection(db, "healthLogs"), {
-      ...log,
-      uid,
-    });
+  const id = Date.now().toString(); // ← ここで id を作る
+  const logWithUid = { ...log, id, uid };
 
-    console.log("✅ Firestoreに保存成功 ID:", docRef.id);
-    return docRef.id;
-  } catch (error) {
-    console.error("🔥 保存失敗", error);
-    throw error;
-  }
+  const docRef = doc(db, "healthLogs", id);
+  await setDoc(docRef, logWithUid);
+  return id;
+};
+
+// 🔸 既存ログの更新
+export const saveHealthLog = async (log: LogItem) => {
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw new Error("未ログイン");
+
+  const logWithUid = { ...log, uid };
+  const docRef = doc(db, "healthLogs", log.id);
+  await setDoc(docRef, logWithUid);
+  return log.id;
 };
 
 export const fetchHealthLogs = async (uid: string) => {

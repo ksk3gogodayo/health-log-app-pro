@@ -7,7 +7,7 @@ export interface Meds {
 }
 
 export interface LogItem {
-  id?: string;
+  id: string;
   date: string;
   time: string;
   memo: string;
