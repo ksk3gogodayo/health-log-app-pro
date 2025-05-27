@@ -127,7 +127,8 @@ const HealthLogApp = () => {
         };
 
         if (editTarget) {
-            const editedLog = { ...editTarget, ...newLog }; await updateHealthLog(editedLog.id, editedLog);
+            const editedLog = { ...editTarget, ...newLog };
+            await updateLog(editedLog); // ← ここが超大事！！
             alert("編集されました！");
             setEditTarget(null);
         } else {
@@ -326,6 +327,8 @@ const HealthLogApp = () => {
     console.log("selectedDate:", selectedDate);
     console.log("logList:", logs);
 
+    const [openLogId, setOpenLogId] = useState<string | null>(null);
+
     return (
         <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
             <style>
@@ -481,34 +484,54 @@ const HealthLogApp = () => {
             <hr />
 
             {/* ログ表示 */}
+            {/* ログ表示 */}
             <h3>過去の記録一覧</h3>
             {pastLogs.length > 0 ? (
-                pastLogs.map((log) => (
-                    <div
-                        key={log.id}
-                        className="log-entry"
-                        style={{
-                            marginBottom: "20px",
-                            padding: "12px",
-                            border: "1px solid #ccc",
-                            borderRadius: "8px",
-                            backgroundColor: "#f9f9f9",
-                            whiteSpace: "pre-wrap", // 🔑 ← これでメモの改行が反映される！
-                        }}
-                    >
-                        <p>{log.date} / {log.time}</p>
-                        <p>・アサコール: {log.meds.asacol ? "✔️" : "❌"} / クリアミン: {log.meds.clearmin ? "✔️" : "❌"} / エビオス: {log.meds.ebios ? "✔️" : "❌"}</p>
-                        <p>花粉レベル: {log.pollenLevel || "未入力"}</p>
-                        <p>{log.memo}</p>
-                        <button onClick={() => handleEdit(log.id)}>編集</button>
-                        <button onClick={() => handleDelete(log.id)}>削除</button>
-                    </div>
-                ))
+                pastLogs.map((log) => {
+                    const isOpen = openLogId === log.id;
+
+                    return (
+                        <div
+                            key={log.id}
+                            className="log-entry"
+                            style={{
+                                marginBottom: "20px",
+                                padding: "12px",
+                                border: "1px solid #ccc",
+                                borderRadius: "8px",
+                                backgroundColor: "#f9f9f9",
+                                whiteSpace: "pre-wrap",
+                            }}
+                        >
+                            <div
+                                onClick={() => setOpenLogId(isOpen ? null : log.id)}
+                                style={{
+                                    cursor: "pointer",
+                                    fontWeight: "bold",
+                                    fontSize: "16px",
+                                }}
+                            >
+                                {isOpen ? "▼" : "▶"} {log.date} / {log.time}
+                            </div>
+
+                            {isOpen && (
+                                <div style={{ marginTop: "8px", whiteSpace: "pre-wrap" }}>
+                                    <p>💊 アサコール: {log.meds.asacol ? "✔️" : "❌"} / クリアミン: {log.meds.clearmin ? "✔️" : "❌"} / エビオス: {log.meds.ebios ? "✔️" : "❌"}</p>
+                                    <p>🍃 花粉レベル: {log.pollenLevel || "未入力"}</p>
+                                    <p>📝 {log.memo}</p>
+                                    <div style={{ marginTop: "8px" }}>
+                                        <button onClick={() => handleEdit(log.id)} style={{ marginRight: "8px" }}>編集</button>
+                                        <button onClick={() => handleDelete(log.id)}>削除</button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    );
+                })
             ) : (
                 <p>まだ記録はありません。</p>
             )}
         </div>
-    )
+    );
 };
-
 export default HealthLogApp;
