@@ -1,6 +1,6 @@
 // src/hooks/useHealthLogs.ts
 import { useEffect, useState } from "react";
-import { fetchHealthLogs, saveNewHealthLog, deleteHealthLog } from "../lib/firestore";
+import { fetchHealthLogs, saveNewHealthLog, deleteHealthLog, updateHealthLog } from "../lib/firestore";
 import type { LogItem, NewLogItem } from "../types";
 
 export const useHealthLogs = (uid: string | undefined) => {
@@ -49,5 +49,17 @@ export const useHealthLogs = (uid: string | undefined) => {
     }
   };
 
-  return { logs, addLog, deleteLog, loading, error };
+  const updateLog = async (updatedLog: LogItem) => {
+    if (!uid) return;
+    try {
+      await updateHealthLog(updatedLog.id, updatedLog);
+      setLogs((prev) =>
+        prev.map((log) => (log.id === updatedLog.id ? updatedLog : log))
+      );
+    } catch (err) {
+      console.error("更新に失敗しました", err);
+    }
+  };
+
+  return { logs, addLog, deleteLog, updateLog, loading, error };
 };

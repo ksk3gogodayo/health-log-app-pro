@@ -65,7 +65,7 @@ const HealthLogApp = () => {
         return () => unsub();
     }, []);
 
-    const { logs, addLog, deleteLog } = useHealthLogs(user?.uid);
+    const { logs, addLog, deleteLog, updateLog } = useHealthLogs(user?.uid);
 
     useEffect(() => {
         const random = Math.floor(Math.random() * messages.length);
@@ -177,13 +177,8 @@ const HealthLogApp = () => {
         try {
             if (editTarget) {
                 // ✅ 編集モード
-                const updatedLog: LogItem = {
-                    ...editTarget,
-                    ...commonData,
-                };
-
-                await saveHealthLog(updatedLog);
-                const updatedLogs = await fetchHealthLogs(user?.uid || "");
+                const updatedLog: LogItem = { ...editTarget, ...commonData };
+                await updateLog(updatedLog); // ✅ これだけでOK
                 alert("編集されました！");
                 setEditTarget(null);
             } else {
