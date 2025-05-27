@@ -314,7 +314,7 @@ const HealthLogApp = () => {
 
     // 選択日で絞り込み
     const filteredLogs = selectedDate
-            ? logs.filter((log) => {
+        ? logs.filter((log) => {
             // ②「日付選択フィルター」では formattedLogDate
             const formattedLogDate = padDate(log.date);
             console.log(`比較: ${formattedLogDate} === ${selectedDate} → ${formattedLogDate === selectedDate}`);
@@ -484,7 +484,18 @@ const HealthLogApp = () => {
             <h3>過去の記録一覧</h3>
             {pastLogs.length > 0 ? (
                 pastLogs.map((log) => (
-                    <div key={log.id}>
+                    <div
+                        key={log.id}
+                        className="log-entry"
+                        style={{
+                            marginBottom: "20px",
+                            padding: "12px",
+                            border: "1px solid #ccc",
+                            borderRadius: "8px",
+                            backgroundColor: "#f9f9f9",
+                            whiteSpace: "pre-wrap", // 🔑 ← これでメモの改行が反映される！
+                        }}
+                    >
                         <p>{log.date} / {log.time}</p>
                         <p>・アサコール: {log.meds.asacol ? "✔️" : "❌"} / クリアミン: {log.meds.clearmin ? "✔️" : "❌"} / エビオス: {log.meds.ebios ? "✔️" : "❌"}</p>
                         <p>花粉レベル: {log.pollenLevel || "未入力"}</p>
