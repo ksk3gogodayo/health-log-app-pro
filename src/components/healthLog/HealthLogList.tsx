@@ -57,7 +57,7 @@ const HealthLogList: React.FC<Props> = ({ logs, onEdit, onDelete, onCopyMarkdown
                 <button onClick={() => onCopyMarkdown(log)}>Markdownコピー</button>
               </div>
             </div>
-            <p>{log.memo}</p>
+            <p style={{ whiteSpace: "pre-line" }}>{log.memo}</p>
             <ul>
               <li>アサコール: {log.meds.asacol ? "✔️" : "❌"}</li>
               <li>クリアミン: {log.meds.clearmin ? "✔️" : "❌"}</li>
