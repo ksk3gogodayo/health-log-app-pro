@@ -1,56 +1,48 @@
-# Health Log App｜体調記録アプリ（React×Firebase）
+# Health Log App Pro 🩺🌸
 
-日々の体調や服薬状況を、スマホ・PCから手軽に記録・振り返りできるWebアプリです。
-「続けやすさ」と「振り返りやすさ」にこだわり、設計・UIUXを工夫しました。
+個人の健康・体調記録を効率よく記録・振り返りできる Web アプリです。  
+React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分離・最適化しました。
 
-## 🚀 アプリ概要
+## 🔧 使用技術・スタック
 
-Health Log App は、体調・服薬・気分を簡単に記録できるWebアプリです。
-スマートフォンやPCから、日々の健康状態をシンプルな操作で入力・振り返りできます。
+- **Frontend**: Vite + React + TypeScript
+- **UI**: CSS Modules / Tailwind（必要に応じて）
+- **状態管理**: useState, useEffect, カスタムフック（`useMeds`, `useHealthLogs` など）
+- **Backend**: Firebase Firestore / Firebase Auth
+- **Deployment**: Vercel
 
-生活習慣の見直しや、医療機関での説明資料として活用できるほか、
-日々の小さな変化を「見える化」することで、セルフケアの習慣化をサポートします。
+## 📁 構成の特徴
 
-- **アプリURL**：  
-  [Health Log App 本体（Vercel公開版）](https://health-log-app.vercel.app/)
+- `features/meds`：薬のCRUD操作（types / services / hooks に分離）
+- `hooks/`：カスタムフックでロジックを再利用可能に
+- `components/`：フォーム・リスト表示を分離
+- `lib/firebase.ts`：初期化設定を共通管理
 
-- **ポートフォリオ解説**：  
-  [Health Log App 開発解説ページ（Notion）](https://succulent-tent-197.notion.site/Health-Log-App-1d9f91f28e9280ad9f8cc58e7027158a)
+## 🚀 機能一覧
 
-## 🛠️ 使用技術スタック
+- Firebase Auth によるログイン / 新規登録
+- 健康ログの記録（メモ＋薬のチェック）
+- カレンダーUIでのログ閲覧
+- Markdown出力対応（予定）
+- モバイル対応済（レスポンシブ）
 
-- **Frontend**：React（TypeScript）
-- **Backend / DB**：Firebase（Cloud Firestore, Authentication）
-- **Hosting**：Vercel
+## 🔗 デプロイURL
 
-## 🌟 主な機能・工夫ポイント
+[https://health-log-app-pro.vercel.app](https://health-log-app-pro.vercel.app)
 
-- 体調メモ＋薬チェックの記録入力（複数の薬に対応）
-- ログの一覧表示（Firestoreと連携）
-- 匿名ログインによるユーザー識別
-- 日付ごとの記録をカレンダーから確認可能
-- 季節ごとのテーマ切り替え（色・メッセージ）
-- Markdown形式での出力（開発中）
+## 📌 今後の予定
 
-## 🔥 今後の開発予定
-
-- 編集／削除機能のUI改善
-- 薬のカスタム登録と管理機能
-- 花粉レベルの自動取得・表示
+- ログの編集・削除機能
+- ユーザーごとのデータ保存整理
 - ダークモード対応
-- より柔軟なスマホ表示最適化
 
-## 📝 ライセンス
+---
 
-- このリポジトリは個人開発目的のため、特にライセンス制限は設けていません。
-- 内容を参考にしていただくのは自由です。
-- フィードバックなど歓迎です！
+## 🙌 補足
 
-## 👤 開発・運用者
+このアプリは、React / TypeScript / Firebase を学習しながら「実務構成」を意識して設計したポートフォリオです。  
+より現場に近い構成で、機能を拡張しやすく保守性を高めています。
 
-- 池上 慶亮 / Keisuke Ikegami
-- 技術習得と転職活動の一環として、本アプリを開発・公開しています。
 
-<!--
-#healthlog #react #firebase #typescript #個人開発 #ポートフォリオ
--->
+📣 ご意見・レビュー大歓迎です！  
+GitHub IssuesやPull Requestでの提案もお気軽にどうぞ。
