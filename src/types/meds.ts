@@ -1,3 +1,4 @@
+// types/med.ts
 export type MedItem = {
   id: string;
   name: string;
@@ -5,3 +6,5 @@ export type MedItem = {
   timing?: string;
   active: boolean;
 };
+
+export type NewMedItem = Omit<MedItem, "id">;

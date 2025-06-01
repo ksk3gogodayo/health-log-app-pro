@@ -4,7 +4,7 @@ import { auth } from "./firebase";
 import { User } from "firebase/auth";
 import HealthLogApp from "./components/HealthLogApp";
 import Login from "./Login";
-import SignUp from "./SignUp"; // 新しく追加されたインポート
+// import SignUp from "./SignUp"; // 新しく追加されたインポート
 import { getSeason } from "./lib/getSeason";
 import { seasonThemes } from "./lib/theme";
 
