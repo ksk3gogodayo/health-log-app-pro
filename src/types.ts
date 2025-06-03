@@ -14,6 +14,7 @@ export interface LogItem {
   meds: Meds;
   pollenLevel: PollenLevel;
   uid: string;
+  customMedsCheck?: Record<string, boolean>; // ← ★追加
 }
 
 export type NewLogItem = Omit<LogItem, "id">;

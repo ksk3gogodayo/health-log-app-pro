@@ -48,6 +48,9 @@ const HealthLogApp = () => {
     clearmin: false,
     ebios: false,
   });
+  const [customMedsCheck, setCustomMedsCheck] = useState<
+    Record<string, boolean>
+  >({});
   // 削除 NG。フォーム入力や保存に必要なため、残しておく。
   const [date, setDate] = useState<string>("");
   const [time, setTime] = useState<string>("");
@@ -124,6 +127,14 @@ const HealthLogApp = () => {
     }));
   };
 
+  //✅ onCustomMedsChange を実装：
+  const handleCustomMedsChange = (id: string, checked: boolean) => {
+    setCustomMedsCheck((prev) => ({
+      ...prev,
+      [id]: checked,
+    }));
+  };
+
   // 記録処理
   const handleSubmit = async () => {
     console.log("🟡 handleSubmit 実行されたよ！");
@@ -173,6 +184,7 @@ const HealthLogApp = () => {
       setPollenLevel(log.pollenLevel);
       setDate(log.date);
       setTime(log.time);
+          setCustomMedsCheck(log.customMedsCheck || {}); // ←ここ
     }
   };
 
@@ -184,7 +196,6 @@ const HealthLogApp = () => {
     const formattedDate = selectedDate
       ? padDate(selectedDate)
       : now.toISOString().split("T")[0];
-
     const commonData = {
       memo,
       meds,
@@ -192,6 +203,7 @@ const HealthLogApp = () => {
       date: formattedDate,
       time: formattedTime,
       uid: user?.uid || "",
+      customMedsCheck, // ← ★これ追加！
     };
 
     try {
@@ -526,6 +538,9 @@ const HealthLogApp = () => {
         onCancel={handleCancel}
         editTargetId={editTarget ? editTarget.id : null}
         isSaving={isSaving} // 🔸 追加
+        customMeds={customMeds}
+        customMedsCheck={customMedsCheck}
+        onCustomMedsChange={handleCustomMedsChange}
       />
       <button
         onClick={copyAllLogsMarkdown}
