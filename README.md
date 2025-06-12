@@ -1,5 +1,6 @@
 # Health Log App Pro 🩺🌸
 
+
 個人の健康・体調記録を効率よく記録・振り返りできる Web アプリです。  
 React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分離・最適化しました。
 
@@ -46,3 +47,4 @@ React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分
 
 📣 ご意見・レビュー大歓迎です！  
 GitHub IssuesやPull Requestでの提案もお気軽にどうぞ。
+
