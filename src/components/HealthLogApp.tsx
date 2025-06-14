@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // スタイル読み込み
-import { saveNewHealthLog } from "../lib/firestore";
+// import { saveNewHealthLog } from "../lib/firestore";
 import { auth } from "../firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { getSeason, seasonThemes } from "../lib/theme";
@@ -13,6 +13,8 @@ import MedForm from "./MedForm"; // or "../components/MedForm" など
 import { useMeds } from "../hooks/useMeds"; // カスタム薬のフック
 // type CalendarValue = Date | Date[] | null;
 // type Value = Date | Date[] | null;
+import { saveNewHealthLog } from "../features/healthLog/services/saveNewHealthLog";
+
 
 // 薬チェック用の型
 const messages = [
@@ -196,6 +198,7 @@ const HealthLogApp = () => {
     const formattedDate = selectedDate
       ? padDate(selectedDate)
       : now.toISOString().split("T")[0];
+      
     const commonData = {
       memo,
       meds,
