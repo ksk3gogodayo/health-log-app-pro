@@ -35,18 +35,19 @@ const HealthLogForm: React.FC<Props> = ({
   isSaving,
   editTargetId,
   customMeds,
+  customMedsCheck,
   onCustomMedsChange, // ← これが抜けてるはず！
 }) => {
-  const [customMedsCheck, setCustomMedsCheck] = useState<
-    Record<string, boolean>
-  >({});
-  useEffect(() => {
-    const initialChecks: Record<string, boolean> = {};
-    customMeds.forEach((med) => {
-      initialChecks[med.id] = false; // ← 最初は全部オフ
-    });
-    setCustomMedsCheck(initialChecks);
-  }, [customMeds]);
+  // const [customMedsCheck, setCustomMedsCheck] = useState<
+  //   Record<string, boolean>
+  // >({});
+  // useEffect(() => {
+  //   const initialChecks: Record<string, boolean> = {};
+  //   customMeds.forEach((med) => {
+  //     initialChecks[med.id] = false; // ← 最初は全部オフ
+  //   });
+  //   setCustomMedsCheck(initialChecks);
+  // }, [customMeds]);
   return (
     <>
       <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "1rem" }}>
