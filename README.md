@@ -48,3 +48,37 @@ React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分
 📣 ご意見・レビュー大歓迎です！  
 GitHub IssuesやPull Requestでの提案もお気軽にどうぞ。
 
+---
+
+# Health Log App Pro 🩺🗒️
+
+A personal health tracking app built with **React**, **TypeScript**, and **Firebase**.
+
+## 📦 Features
+
+- ✅ Daily symptom and medication logging  
+- 📅 Calendar-based view for reviewing past logs  
+- ☁️ Data persistence with Firestore  
+- 🔒 Secure login with Firebase Auth  
+- 📱 Responsive UI for mobile use
+
+## 🧠 Motivation
+
+This app was created to **track physical symptoms and medication** during chronic illness recovery.  
+It helped me understand patterns and communicate more clearly with my doctor.
+
+## 🛠️ Tech Stack
+
+- React / TypeScript  
+- Firebase (Auth, Firestore)  
+- Vite  
+- Zustand / React Hook Form  
+- Tailwind CSS  
+
+## 🚀 Getting Started
+
+```bash
+git clone https://github.com/ksk3gogodayo/health-log-app-pro.git
+cd health-log-app-pro
+npm install
+npm run dev
