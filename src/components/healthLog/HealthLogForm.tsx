@@ -51,22 +51,28 @@ const HealthLogForm: React.FC<Props> = ({
     <>
       <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "1rem" }}>
 
-        {customMeds.map((med) => (
-          <label
+        {customMeds.map((med) => {
+          console.log("💊 med.id:", med.id);
+          return (
+            <label
             key={med.id}
             style={{
               display: "block",
             }}
-          >
-            <input
-              type="checkbox"
-              checked={customMedsCheck[med.id] || false}
-              onChange={(e) => onCustomMedsChange(med.id, e.target.checked)}
-              style={{ marginRight: "8px" }}
-            />
-            {med.name}
-          </label>
-        ))}
+            >
+              <input
+                type="checkbox"
+                checked={customMedsCheck[med.id] || false}
+                onChange={(e) => {
+                  console.log("🟢 input onChange発火:", med.id, e.target.checked); // ←ここで発火確認
+                  onCustomMedsChange(med.id, e.target.checked);
+                }}
+                style={{ marginRight: "8px" }}
+              />
+              {med.name}
+            </label>
+          );
+    })}
       </div>
       <form
         onSubmit={async (e) => {

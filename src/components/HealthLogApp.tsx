@@ -131,6 +131,7 @@ const HealthLogApp = () => {
 
   //✅ onCustomMedsChange を実装：
   const handleCustomMedsChange = (id: string, checked: boolean) => {
+    console.log("💊 onCustomMedsChange 発火", id, checked); // ←これ追加！
     setCustomMedsCheck((prev) => ({
       ...prev,
       [id]: checked,
@@ -191,6 +192,7 @@ const HealthLogApp = () => {
   };
 
   const handleSave = async () => {
+    console.log("保存直前の customMedsCheck:", customMedsCheck);
     console.log("🟡 handleSave 実行開始！");
     setIsSaving(true); // 🔸 追加
     const now = new Date();
@@ -198,7 +200,7 @@ const HealthLogApp = () => {
     const formattedDate = selectedDate
       ? padDate(selectedDate)
       : now.toISOString().split("T")[0];
-      
+
     const commonData = {
       memo,
       meds,
