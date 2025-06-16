@@ -19,6 +19,16 @@ React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分
 - `components/`：フォーム・リスト表示を分離
 - `lib/firebase.ts`：初期化設定を共通管理
 
+---
+
+## 📝 主な機能まとめ（日本語）
+
+- 体調メモと服薬チェックの記録
+- カレンダーから過去ログの振り返り
+- Firebaseによるログイン・保存・取得
+- スマホにも最適化されたUI
+- Markdown形式の出力にも対応予定
+
 ## 🚀 機能一覧
 
 - Firebase Auth によるログイン / 新規登録
@@ -30,6 +40,19 @@ React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分
 ## 🔗 デプロイURL
 
 [https://health-log-app-pro.vercel.app](https://health-log-app-pro.vercel.app)
+
+## 🚀 ローカルでの実行手順
+
+以下の手順でローカル開発環境を立ち上げられます。
+
+```bash
+git clone https://github.com/ksk3gogodayo/health-log-app-pro.git
+cd health-log-app-pro
+npm install
+npm run dev
+```
+
+※ Firebaseプロジェクトのセットアップが必要な場合があります。
 
 ## 📌 今後の予定
 
@@ -44,6 +67,11 @@ React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分
 このアプリは、React / TypeScript / Firebase を学習しながら「実務構成」を意識して設計したポートフォリオです。  
 より現場に近い構成で、機能を拡張しやすく保守性を高めています。
 
+## 🎯 開発の動機（日本語）
+
+慢性症状の経過観察や、医師との相談に役立つよう  
+自分で体調と服薬の記録をつけられるアプリを作成しました。  
+継続的に使えるよう、UIと操作性を重視しています。
 
 📣 ご意見・レビュー大歓迎です！  
 GitHub IssuesやPull Requestでの提案もお気軽にどうぞ。
@@ -61,7 +89,7 @@ A personal health tracking app built with **React**, **TypeScript**, and **Fireb
 - ☁️ Data persistence with Firestore  
 - 🔒 Secure login with Firebase Auth  
 - 📱 Responsive UI for mobile use
-
+- 
 ## 🧠 Motivation
 
 This app was created to **track physical symptoms and medication** during chronic illness recovery.  
@@ -82,3 +110,4 @@ git clone https://github.com/ksk3gogodayo/health-log-app-pro.git
 cd health-log-app-pro
 npm install
 npm run dev
+```
