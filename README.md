@@ -21,15 +21,13 @@ React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分
 
 ---
 
-## 📝 主な機能まとめ（日本語）
+## 📝 主な機能（概要）
 
-- 体調メモと服薬チェックの記録
-- カレンダーから過去ログの振り返り
-- Firebaseによるログイン・保存・取得
-- スマホにも最適化されたUI
-- Markdown形式の出力にも対応予定
+- 健康状態と服薬の記録
+- 過去ログのカレンダー表示
+- モバイル対応UI
 
-## 🚀 機能一覧
+## 🚀 機能一覧（詳細）
 
 - Firebase Auth によるログイン / 新規登録
 - 健康ログの記録（メモ＋薬のチェック）
@@ -89,7 +87,7 @@ A personal health tracking app built with **React**, **TypeScript**, and **Fireb
 - ☁️ Data persistence with Firestore  
 - 🔒 Secure login with Firebase Auth  
 - 📱 Responsive UI for mobile use
-- 
+  
 ## 🧠 Motivation
 
 This app was created to **track physical symptoms and medication** during chronic illness recovery.  
