@@ -7,6 +7,16 @@
 ![mobile-calendar](https://github.com/user-attachments/assets/b0a84c39-06f2-4a95-95a5-62984b1f9278)
 ![mobile-calendar-log](https://github.com/user-attachments/assets/738f76c8-bb4c-4300-ba44-acb87353432e)
 
+---
+
+## 🔍 動作確認リンク（開発用 Preview）
+
+このバージョンは、GitHub上で作成した Pull Request（PR）用の一時的なプレビュー環境です。  
+実際の表示・挙動をブラウザで確認できます。
+
+🔗 [Vercel Preview（PR #1 用リンク）](https://health-log-app-pro-git-ksk3go-b2619c-keisukes-projects-cf2c4388.vercel.app)
+
+> ※ 本番環境ではありません。マージ・削除されるとリンクは無効になる場合があります。
 
 ---
 
