@@ -1,5 +1,6 @@
 # Health Log App Pro 🩺🌸
 
+[![Vercel](https://vercelbadge.vercel.app/api/ksk3gogodayo/health-log-app-pro)](https://health-log-app-pro.vercel.app)
 
 個人の健康・体調記録を効率よく記録・振り返りできる Web アプリです。  
 React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分離・最適化しました。
