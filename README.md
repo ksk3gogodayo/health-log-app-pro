@@ -71,9 +71,10 @@ React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分
 ---
 
 ## 📝 機能
-- 3タップで体調＋服薬を記録
-- カレンダーで日別ログを閲覧
+- 3タップで体調 + 服薬を記録  
+- カレンダーで日別ログを閲覧  
 - マルチデバイス対応 (Responsive)
+- Firebase Auth でログイン
 
 👉 **詳細仕様はこちら** → [docs/FUNCTIONS.md](docs/FUNCTIONS.md)
 
