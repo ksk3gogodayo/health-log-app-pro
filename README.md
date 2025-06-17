@@ -5,13 +5,61 @@
 個人の健康・体調記録を効率よく記録・振り返りできる Web アプリです。  
 React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分離・最適化しました。
 
-## 🔧 使用技術・スタック
+<!-- ===== 🎯 DESIGN INTENT ===== -->
+## 🎯 設計意図（Why & What）
 
-- **Frontend**: Vite + React + TypeScript
-- **UI**: CSS Modules / Tailwind（必要に応じて）
-- **状態管理**: useState, useEffect, カスタムフック（`useMeds`, `useHealthLogs` など）
-- **Backend**: Firebase Firestore / Firebase Auth
-- **Deployment**: Vercel
+- **課題背景**  
+  潰瘍性大腸炎 (UC) の再燃サインを見逃さないよう、  
+  服薬・体調・ストレス要因を **“3タップ” で記録 → カレンダーで振り返り** できるツールが欲しかった。
+
+- **ターゲット**  
+  *自分* ＋ 同じ慢性疾患を抱える家族・仲間、そして主治医との情報共有。
+
+- **ゴール**  
+  1. 記録コストを徹底的に下げて “毎日続く” UI/UX  
+  2. ログを **Firestore** に集約し、多デバイスでシームレス閲覧  
+  3. データポータビリティ確保（Markdown / CSV Export 検討中）
+
+---
+
+<!-- ===== 🛠 TECH STACK ===== -->
+## 🛠 技術選択（How）
+
+| 階層 / 機能 | 採用技術 | 選定理由 |
+| --- | --- | --- |
+| Frontend | **React 18 + Vite** | 超高速 HMR とシンプル設定 |
+| 状態管理 | React Hooks（`useState` / `useReducer`）| 小〜中規模で十分・学習コスト低 |
+| UI | CSS Modules<br>Tailwind (一部) | 既存 CSS を活かしつつ、ユーティリティで速度アップ |
+| Authentication | **Firebase Auth** | メールリンク式でパスレス、実装 5 分 |
+| Database | **Firestore** | スキーマレスで POC 最速、リアルタイム購読 |
+| Hosting / CI | **Vercel** | GitHub PR → Preview URL 自動生成でレビューフロー楽 |
+| テスト (予定) | Playwright | E2E で回帰バグ検知 |
+| 図管理 | Figma | 画面遷移図 / Arch 図共有 |
+
+---
+
+<!-- ===== 📚 LEARNINGS ===== -->
+## 📚 学び・詰まったこと（Learnings）
+
+1. **`useState` Lazy 初期化**  
+   – 読み込み時の不要フェッチを 0 にして TTI 改善  
+2. **Timezone 問題**  
+   – UTC 保管で JST が 1 日ズレ → `toLocaleDateString('ja-JP')` で解決  
+3. **初 PR → レビュー → マージ 完走**  
+   – `feature/markdown-export` ブランチで PR デビュー、GitHub Flow を体感  
+4. **README リッチ化**  
+   – スクショを `docs/` に分離、バッジ追加でファーストインプレッション向上  
+5. **型分離 (`LogItem` vs `NewLogItem`)**  
+   – Firestore 書き込み専用型を分け、`Omit<...,'id'>` の地獄を回避
+
+### 今後の TODO
+- [ ] Playwright で Happy-path E2E テスト  
+- [ ] `GET latest 10` のページネーション + 無限スクロール  
+- [ ] Next.js 版を派生させて CSR / SSR 比較  
+- [ ] ダークモード + Lottie アニメ実装  
+- [ ] CSV / Markdown Export → 医師への共有をワンクリック化
+
+---
 
 ## 📁 構成の特徴
 
@@ -22,19 +70,12 @@ React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分
 
 ---
 
-## 📝 主な機能（概要）
+## 📝 機能
+- 3タップで体調＋服薬を記録
+- カレンダーで日別ログを閲覧
+- マルチデバイス対応 (Responsive)
 
-- 健康状態と服薬の記録
-- 過去ログのカレンダー表示
-- モバイル対応UI
-
-## 🚀 機能一覧（詳細）
-
-- Firebase Auth によるログイン / 新規登録
-- 健康ログの記録（メモ＋薬のチェック）
-- カレンダーUIでのログ閲覧
-- Markdown出力対応（予定）
-- モバイル対応済（レスポンシブ）
+👉 **詳細仕様はこちら** → [docs/FUNCTIONS.md](docs/FUNCTIONS.md)
 
 ## 🔗 デプロイURL
 
@@ -93,14 +134,6 @@ A personal health tracking app built with **React**, **TypeScript**, and **Fireb
 
 This app was created to **track physical symptoms and medication** during chronic illness recovery.  
 It helped me understand patterns and communicate more clearly with my doctor.
-
-## 🛠️ Tech Stack
-
-- React / TypeScript  
-- Firebase (Auth, Firestore)  
-- Vite  
-- Zustand / React Hook Form  
-- Tailwind CSS  
 
 ## 🚀 Getting Started
 
