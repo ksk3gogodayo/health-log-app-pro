@@ -119,24 +119,60 @@ GitHub IssuesやPull Requestでの提案もお気軽にどうぞ。
 
 ---
 
-# Health Log App Pro 🩺🗒️
+<!-- ===== 🌐 English Section ===== -->
 
-A personal health tracking app built with **React**, **TypeScript**, and **Firebase**.
+# Health Log App Pro 🩺🌸
+A web app that lets you **log symptoms & meds in three taps** and review them on a calendar.  
+Built with React, TypeScript, and Firebase (Firestore / Auth).
 
-## 📦 Features
+## 🎯 Design Intent (Why & What)
+- **Background**  
+  Wanted a quick way to spot flare-ups of ulcerative colitis (UC) by logging **symptoms, meds, and stress factors** in seconds.
+- **Target Users**  
+  Myself, family or friends with chronic illness, and my doctor.
+- **Goals**  
+  1. Ultra-low friction input → usable **every single day**  
+  2. Sync across devices via Firestore  
+  3. Ensure data portability (Markdown / CSV export in roadmap)
 
-- ✅ Daily symptom and medication logging  
-- 📅 Calendar-based view for reviewing past logs  
-- ☁️ Data persistence with Firestore  
-- 🔒 Secure login with Firebase Auth  
-- 📱 Responsive UI for mobile use
-  
-## 🧠 Motivation
+## 🛠 Tech Stack (How)
 
-This app was created to **track physical symptoms and medication** during chronic illness recovery.  
-It helped me understand patterns and communicate more clearly with my doctor.
+| Layer / Feature | Tech Choice | Why |
+| --- | --- | --- |
+| Frontend | React 18 + Vite | Fast HMR & minimal config |
+| State | React Hooks (`useState`, `useReducer`) | Enough for small–mid size apps |
+| UI | CSS Modules + Tailwind (partial) | Keep legacy CSS, speed up new UI |
+| Auth | Firebase Auth | Password-less email link in 5 min |
+| DB | Firestore | Schema-less, realtime, quick POC |
+| Hosting / CI | Vercel | Auto preview per PR |
+| Testing (WIP) | Playwright | E2E regression check |
+| Diagrams | Figma | Screen flow & architecture docs |
 
-## 🚀 Getting Started
+## 📚 Learnings
+1. **useState Lazy Init** – cut unnecessary fetches, improved TTI  
+2. **Timezone issue** – fixed UTC → JST shift via `toLocaleDateString('ja-JP')`  
+3. **First PR flow** – `feature/markdown-export` → review → merge  
+4. **README refactor** – moved images to `docs/`, added badges  
+5. **Type split (`LogItem` vs `NewLogItem`)** – avoided `Omit<...,'id'>` pain
+
+### TODO
+- [ ] Playwright E2E tests  
+- [ ] Latest-10 pagination + infinite scroll  
+- [ ] Experimental Next.js 14 CSR/SSR comparison  
+- [ ] CSV / Markdown export for doctor sharing  
+- [ ] Dark mode + Lottie animations  
+
+## 📝 Features
+- Log symptoms + meds in three taps  
+- Browse daily logs on a calendar  
+- Responsive UI (multi-device)  
+- Firebase Auth login  
+- ✨ **Detailed spec** → [docs/FUNCTIONS.md](docs/FUNCTIONS.md)
+
+## 🚀 Demo
+[Vercel Preview](https://health-log-app-pro.vercel.app)
+
+## 💻 Local Dev
 
 ```bash
 git clone https://github.com/ksk3gogodayo/health-log-app-pro.git
