@@ -1,3 +1,4 @@
+
 export type PollenLevel = "低い" | "普通" | "多い" | "";
 
 export interface Meds {

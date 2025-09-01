@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { MedItem } from "@/types/meds";
+import { StoredMed } from "@/types/meds";
 import { fetchMeds, addMed, deleteMed } from "../features/meds/services/meds";
 
 export const useMeds = (userId: string) => {
-  const [meds, setMeds] = useState<MedItem[]>([]);
+  const [meds, setMeds] = useState<StoredMed[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,10 +25,10 @@ export const useMeds = (userId: string) => {
   console.log("✅ userId:", userId); // ← ここなら安全に出る！
 
   // 薬を追加する関数
-  const handleAddMed = async (med: Omit<MedItem, "id">) => {
+  const handleAddMed = async (med: Omit<StoredMed, "id">) => {
     if (!userId) return; // 🔒 安全に！
     const newId = await addMed(userId, med);
-    const newItem: MedItem = { id: newId, ...med };
+    const newItem: StoredMed = { id: newId, ...med };
     setMeds((prev) => [...prev, newItem]);
   };
 

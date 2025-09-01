@@ -1,9 +1,9 @@
 // src/components/MedForm.tsx
-import { NewMedItem, MedItem } from "../types/meds";
+import { InputMed, StoredMed } from "../types/meds";
 import { useState } from "react"; // ← useState エラーにも対応
 
 type Props = {
-  onAdd: (med: Omit<MedItem, "id">) => Promise<void>;
+  onAdd: (med: Omit<StoredMed, "id">) => Promise<void>;
   mode: "light" | "dark"; // ← 追加
 };
 
