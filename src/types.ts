@@ -15,6 +15,7 @@ export interface LogItem {
   pollenLevel: PollenLevel;
   uid: string;
   customMedsCheck?: Record<string, boolean>; // ← ★追加
+  aiComment?: string; // ←ここ追加！AIコメントなど
 }
 
 export type NewLogItem = Omit<LogItem, "id">;

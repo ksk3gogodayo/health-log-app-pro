@@ -5,7 +5,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { LogItem, Meds, PollenLevel } from "../../types";
-import { MedItem } from "../../types/meds";
+import { StoredMed } from "../../types/meds";
 
 type Props = {
   memo: string;
@@ -18,7 +18,7 @@ type Props = {
   onCancel: () => void;
   isSaving?: boolean;
   editTargetId?: string | null;
-  customMeds: MedItem[]; // ← 追加
+  customMeds: StoredMed[]; // ← 追加
   customMedsCheck: Record<string, boolean>;
   onCustomMedsChange: (id: string, checked: boolean) => void;
 };
@@ -50,22 +50,32 @@ const HealthLogForm: React.FC<Props> = ({
   // }, [customMeds]);
   return (
     <>
-      <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "1rem" }}>
-
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+          marginBottom: "1rem",
+        }}
+      >
         {customMeds.map((med) => {
           console.log("💊 med.id:", med.id);
           return (
             <label
-            key={med.id}
-            style={{
-              display: "block",
-            }}
+              key={med.id}
+              style={{
+                display: "block",
+              }}
             >
               <input
                 type="checkbox"
                 checked={customMedsCheck[med.id] || false}
                 onChange={(e) => {
-                  console.log("🟢 input onChange発火:", med.id, e.target.checked); // ←ここで発火確認
+                  console.log(
+                    "🟢 input onChange発火:",
+                    med.id,
+                    e.target.checked
+                  ); // ←ここで発火確認
                   onCustomMedsChange(med.id, e.target.checked);
                 }}
                 style={{ marginRight: "8px" }}
@@ -73,7 +83,7 @@ const HealthLogForm: React.FC<Props> = ({
               {med.name}
             </label>
           );
-    })}
+        })}
       </div>
       <form
         onSubmit={async (e) => {
