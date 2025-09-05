@@ -1,5 +1,5 @@
 // src/features/healthLog/services/deleteHealthLog.ts
-import { db } from "../../../"firebase";
+import { db } from "../../../firebase";
 import { doc, deleteDoc } from "firebase/firestore";
 
 export const deleteHealthLog = async (id: string): Promise<void> => {
