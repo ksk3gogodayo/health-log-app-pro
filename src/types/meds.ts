@@ -4,6 +4,7 @@ export type StoredMed = {
   name: string; // 薬の名前
   dosage?: string; // 用量（任意）
   timing?: string; // タイミング（任意）
+  aiComment?: string; // AIコメント欄
   active: boolean; // 現在使用中かどうか
 };
 
