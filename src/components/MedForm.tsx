@@ -2,12 +2,14 @@
 import { InputMed, StoredMed } from "../types/meds";
 import { useState } from "react"; // ← useState エラーにも対応
 
-type Props = {
+type MedFormProps = {
   onAdd: (med: Omit<StoredMed, "id">) => Promise<void>;
   mode: "light" | "dark"; // ← 追加
+  customMeds: StoredMed[];
+  setCustomMeds: React.Dispatch<React.SetStateAction<StoredMed[]>>;
 };
 
-const MedForm = ({ onAdd, mode }: Props) => {
+const MedForm = ({ onAdd, mode, customMeds, setCustomMeds }: MedFormProps) => {
   const [name, setName] = useState("");
   const [dosage, setDosage] = useState("");
   const [timing, setTiming] = useState("");
@@ -35,6 +37,12 @@ const MedForm = ({ onAdd, mode }: Props) => {
   const handleGenerateComment = async () => {
     const comment = await generateAiComment(name, dosage, timing);
     setAiComment(comment);
+  };
+
+  const handleDeleteInputMed = (index: number) => {
+    setCustomMeds((prev: StoredMed[]) =>
+      prev.filter((_, i: number) => i !== index)
+    );
   };
 
   return (

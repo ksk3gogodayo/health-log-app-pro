@@ -14,6 +14,7 @@ import { useMeds } from "../hooks/useMeds"; // カスタム薬のフック
 // type CalendarValue = Date | Date[] | null;
 // type Value = Date | Date[] | null;
 import { saveNewHealthLog } from "../features/healthLog/services/saveNewHealthLog";
+import type { InputMed, StoredMed } from "@/types/meds";
 
 // 薬チェック用の型
 const messages = [
@@ -52,6 +53,8 @@ const HealthLogApp = () => {
   const [customMedsCheck, setCustomMedsCheck] = useState<
     Record<string, boolean>
   >({});
+
+  const [customMeds, setCustomMeds] = useState<StoredMed[]>([]);
   // 削除 NG。フォーム入力や保存に必要なため、残しておく。
   const [date, setDate] = useState<string>("");
   const [time, setTime] = useState<string>("");
@@ -85,7 +88,7 @@ const HealthLogApp = () => {
   }, []);
 
   const {
-    meds: customMeds,
+    meds: fetchedMeds,
     loading: medsLoading,
     handleAddMed,
   } = useMeds(user?.uid || "");
@@ -493,15 +496,20 @@ const HealthLogApp = () => {
         }}
       >
         <h3>💊 カスタム薬一覧（仮表示）</h3>
-        <MedForm onAdd={handleAddMed} mode={mode} />
+        <MedForm
+          onAdd={handleAddMed}
+          mode={mode}
+          customMeds={customMeds}
+          setCustomMeds={setCustomMeds}
+        />
         {medsLoading ? (
           <p>読み込み中...</p>
         ) : customMeds.length === 0 ? (
           <p>登録された薬はありません</p>
         ) : (
           <ul>
-            {customMeds.map((med) => (
-              <li key={med.id}>
+            {customMeds.map((med, index) => (
+              <li key={index}>
                 {med.name}
                 {med.dosage && ` / ${med.dosage}`}
                 {med.timing && ` / ${med.timing}`}
