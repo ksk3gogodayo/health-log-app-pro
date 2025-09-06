@@ -1,13 +1,8 @@
-// HealthLogForm.tsx はフォーム部分のコンポーネントとして設計されていたため、
-// 元の安定バージョンでは editTargetId などの状態管理は親で行い、
-// このコンポーネントは props で受け取っていた形に戻します。
-
-import React from "react";
-import { useEffect, useState } from "react";
-import { LogItem, Meds, PollenLevel } from "../../types";
+import React, { useState } from "react";
+import { Meds, PollenLevel } from "../../types";
 import { StoredMed } from "../../types/meds";
 
-type Props = {
+export type HealthLogFormProps = {
   memo: string;
   meds: Meds;
   pollenLevel: PollenLevel | "";
@@ -15,15 +10,15 @@ type Props = {
   onMedsChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPollenLevelChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onSave: () => Promise<void>;
+
   onCancel: () => void;
-  isSaving?: boolean;
   editTargetId?: string | null;
+  isSaving?: boolean;
   customMeds: StoredMed[]; // ← 追加
-  customMedsCheck: Record<string, boolean>;
   onCustomMedsChange: (id: string, checked: boolean) => void;
 };
 
-const HealthLogForm: React.FC<Props> = ({
+const HealthLogForm: React.FC<HealthLogFormProps> = ({
   memo,
   meds,
   pollenLevel,
@@ -31,59 +26,50 @@ const HealthLogForm: React.FC<Props> = ({
   onMedsChange,
   onPollenLevelChange,
   onSave,
-  onCancel,
-  isSaving,
-  editTargetId,
   customMeds,
-  customMedsCheck,
   onCustomMedsChange, // ← これが抜けてるはず！
 }) => {
-  // const [customMedsCheck, setCustomMedsCheck] = useState<
-  //   Record<string, boolean>
-  // >({});
-  // useEffect(() => {
-  //   const initialChecks: Record<string, boolean> = {};
-  //   customMeds.forEach((med) => {
-  //     initialChecks[med.id] = false; // ← 最初は全部オフ
-  //   });
-  //   setCustomMedsCheck(initialChecks);
-  // }, [customMeds]);
+  const [aiComment, setAiComment] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleGenerateComment = async () => {
+    if (!memo.trim()) return;
+
+    setIsLoading(true);
+    setAiComment("");
+
+    try {
+      const res = await fetch("/api/generateComment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: `以下の体調メモに対して簡潔にアドバイスをください:\n${memo}`,
+        }),
+      });
+
+      const data = await res.json();
+      setAiComment(data.comment || "コメント生成に失敗しました。");
+    } catch (err) {
+      console.error("APIエラー:", err);
+      setAiComment("エラーが発生しました。");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "6px",
-          marginBottom: "1rem",
-        }}
-      >
-        {customMeds.map((med) => {
-          console.log("💊 med.id:", med.id);
-          return (
-            <label
-              key={med.id}
-              style={{
-                display: "block",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={customMedsCheck[med.id] || false}
-                onChange={(e) => {
-                  console.log(
-                    "🟢 input onChange発火:",
-                    med.id,
-                    e.target.checked
-                  ); // ←ここで発火確認
-                  onCustomMedsChange(med.id, e.target.checked);
-                }}
-                style={{ marginRight: "8px" }}
-              />
-              {med.name}
-            </label>
-          );
-        })}
+      <div>
+        <button onClick={handleGenerateComment} disabled={isLoading}>
+          {isLoading ? "生成中..." : "AIコメント生成"}
+        </button>
+
+        {aiComment && (
+          <div style={{ whiteSpace: "pre-wrap", marginTop: "1rem" }}>
+            <strong>AIからのアドバイス:</strong>
+            <p>{aiComment}</p>
+          </div>
+        )}
       </div>
       <form
         onSubmit={async (e) => {
@@ -96,9 +82,9 @@ const HealthLogForm: React.FC<Props> = ({
           onChange={onMemoChange}
           placeholder="メモ"
           rows={4}
-          style={{ width: "100%" }}
+          style={{ width: "100%", marginTop: "1rem" }}
         />
-        <div>
+        <div style={{ marginTop: "1rem" }}>
           <label>
             <input
               type="checkbox"
@@ -115,7 +101,7 @@ const HealthLogForm: React.FC<Props> = ({
               checked={meds.clearmin}
               onChange={onMedsChange}
             />
-            クレアミン
+            クリアミン
           </label>
           <label>
             <input
@@ -127,7 +113,8 @@ const HealthLogForm: React.FC<Props> = ({
             エビオス
           </label>
         </div>
-        <div>
+
+        <div style={{ marginTop: "1rem" }}>
           <select value={pollenLevel} onChange={onPollenLevelChange}>
             <option value="">花粉レベルを選択</option>
             <option value="none">なし</option>
@@ -136,14 +123,24 @@ const HealthLogForm: React.FC<Props> = ({
             <option value="high">多い</option>
           </select>
         </div>
-        <div>
-          <button type="submit" disabled={isSaving}>
-            {editTargetId ? "更新" : "保存"}
-          </button>
-          <button type="button" onClick={onCancel}>
-            キャンセル
-          </button>
+
+        <div style={{ marginTop: "1rem" }}>
+          {customMeds.map((med) => (
+            <label key={med.id}>
+              <input
+                type="checkbox"
+                checked={!!med.active}
+                onChange={(e) => onCustomMedsChange(med.id, e.target.checked)}
+                style={{ marginRight: "8px" }}
+              />
+              {med.name}
+            </label>
+          ))}
         </div>
+
+        <button type="submit" style={{ marginTop: "1rem" }}>
+          保存
+        </button>
       </form>
     </>
   );

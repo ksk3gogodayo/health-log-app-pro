@@ -15,7 +15,6 @@ import { useMeds } from "../hooks/useMeds"; // カスタム薬のフック
 // type Value = Date | Date[] | null;
 import { saveNewHealthLog } from "../features/healthLog/services/saveNewHealthLog";
 
-
 // 薬チェック用の型
 const messages = [
   "🌿 今日もおつかれさま",
@@ -187,7 +186,7 @@ const HealthLogApp = () => {
       setPollenLevel(log.pollenLevel);
       setDate(log.date);
       setTime(log.time);
-          setCustomMedsCheck(log.customMedsCheck || {}); // ←ここ
+      setCustomMedsCheck(log.customMedsCheck || {}); // ←ここ
     }
   };
 
@@ -544,7 +543,6 @@ const HealthLogApp = () => {
         editTargetId={editTarget ? editTarget.id : null}
         isSaving={isSaving} // 🔸 追加
         customMeds={customMeds}
-        customMedsCheck={customMedsCheck}
         onCustomMedsChange={handleCustomMedsChange}
       />
       <button
