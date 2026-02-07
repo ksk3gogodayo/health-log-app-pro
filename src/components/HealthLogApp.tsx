@@ -15,7 +15,7 @@ import { useMeds } from "../hooks/useMeds"; // カスタム薬のフック
 // type CalendarValue = Date | Date[] | null;
 // type Value = Date | Date[] | null;
 import { saveNewHealthLog } from "../features/healthLog/services/saveNewHealthLog";
-import type { InputMed, StoredMed } from "@/types/meds";
+import type { StoredMed } from "@/types/meds";
 import MedList from "./MedList";
 
 // 薬チェック用の型
