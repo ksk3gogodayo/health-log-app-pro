@@ -109,11 +109,7 @@ const HealthLogApp = () => {
     setTodayMessage(messages[random]);
   }, []);
 
-  const {
-    meds: fetchedMeds,
-    loading: medsLoading,
-    handleAddMed,
-  } = useMeds(user?.uid || "");
+  const { loading: medsLoading } = useMeds(user?.uid || "");
 
   // 日付ステートを追加
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -162,41 +158,6 @@ const HealthLogApp = () => {
     }));
   };
 
-  // 記録処理
-  const handleSubmit = async () => {
-    console.log("🟡 handleSubmit 実行されたよ！");
-    const now = new Date();
-    const formattedDate = now.toLocaleDateString("ja-JP", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-
-    console.log("🛠 editTarget:", editTarget);
-    const newLog: Omit<LogItem, "id"> = {
-      date: now.toISOString().split("T")[0], // YYYY-MM-DD 形式
-      time: now.toLocaleTimeString(),
-      memo,
-      meds,
-      pollenLevel,
-      uid: user?.uid || "",
-    };
-
-    if (editTarget) {
-      const editedLog = { ...editTarget, ...newLog };
-      await updateLog(editedLog); // ← ここが超大事！！
-      alert("編集されました！");
-      setEditTarget(null);
-    } else {
-      await addLog(newLog); // ← id自動生成
-      alert("記録されました！");
-    }
-
-    setMemo("");
-    setMeds({ asacol: false, clearmin: false, ebios: false });
-    setPollenLevel("");
-  };
-
   // 編集中のログかどうかを判定するヘルパー関数を作る：
   const isEditing = (id: string) => {
     return editTarget?.id === id;
@@ -243,7 +204,7 @@ const HealthLogApp = () => {
       } else {
         // ✅ 新規作成モード
         const newLog: NewLogItem = { ...commonData };
-        const id = await saveNewHealthLog(newLog);
+        await saveNewHealthLog(newLog);
         alert("記録されました！");
       }
     } catch (error) {
@@ -302,16 +263,6 @@ const HealthLogApp = () => {
     borderRadius: "4px",
     cursor: "pointer",
     marginBottom: "10px",
-  };
-
-  const saveButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: "#28a745", // 緑
-  };
-
-  const cancelButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: "#dc3545", // 赤
   };
 
   // カレンダーで選んだ日付に合わせてログを絞る
