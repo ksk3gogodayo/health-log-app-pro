@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // スタイル読み込み
 // import { saveNewHealthLog } from "../lib/firestore";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
+import { collection, query, onSnapshot, orderBy } from "firebase/firestore"; // これも必要
 import { getSeason, seasonThemes } from "../lib/theme";
 import HealthLogForm from "../components/healthLog/HealthLogForm";
 import HealthLogList from "../components/healthLog/HealthLogList";
@@ -14,7 +15,8 @@ import { useMeds } from "../hooks/useMeds"; // カスタム薬のフック
 // type CalendarValue = Date | Date[] | null;
 // type Value = Date | Date[] | null;
 import { saveNewHealthLog } from "../features/healthLog/services/saveNewHealthLog";
-
+import type { InputMed, StoredMed } from "@/types/meds";
+import MedList from "./MedList";
 
 // 薬チェック用の型
 const messages = [
@@ -53,7 +55,7 @@ const HealthLogApp = () => {
   const [customMedsCheck, setCustomMedsCheck] = useState<
     Record<string, boolean>
   >({});
-  // 削除 NG。フォーム入力や保存に必要なため、残しておく。
+
   const [date, setDate] = useState<string>("");
   const [time, setTime] = useState<string>("");
   const [pollenLevel, setPollenLevel] = useState<PollenLevel | "">("");
@@ -65,6 +67,30 @@ const HealthLogApp = () => {
   // 追加
   const [user, setUser] = useState<User | null>(null);
 
+  // --- ここから追加 ---
+  const [customMeds, setCustomMeds] = useState<StoredMed[]>([]);
+  const [editingMed, setEditingMed] = useState<StoredMed | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    if (!user) {
+      setCustomMeds([]);
+      return;
+    }
+    // Firebaseからデータを取ってくる魔法の呪文
+    const q = query(collection(db, "meds"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const medsData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as StoredMed[];
+      setCustomMeds(medsData);
+    });
+    return () => unsubscribe();
+  }, [user]);
+  // --- ここまで追加 ---
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
@@ -72,7 +98,7 @@ const HealthLogApp = () => {
         "✅ ログイン中のユーザー:",
         firebaseUser?.email,
         "uid:",
-        firebaseUser?.uid
+        firebaseUser?.uid,
       );
     });
     return () => unsub();
@@ -86,7 +112,7 @@ const HealthLogApp = () => {
   }, []);
 
   const {
-    meds: customMeds,
+    meds: fetchedMeds,
     loading: medsLoading,
     handleAddMed,
   } = useMeds(user?.uid || "");
@@ -96,7 +122,7 @@ const HealthLogApp = () => {
 
   // 1件のログをMarkdown形式に変換
   const formatToMarkdown = (
-    log: LogItem & { pollenLevel: PollenLevel | "" }
+    log: LogItem & { pollenLevel: PollenLevel | "" },
   ) => {
     return `## ${log.date}｜体調記録
 
@@ -187,7 +213,7 @@ const HealthLogApp = () => {
       setPollenLevel(log.pollenLevel);
       setDate(log.date);
       setTime(log.time);
-          setCustomMedsCheck(log.customMedsCheck || {}); // ←ここ
+      setCustomMedsCheck(log.customMedsCheck || {}); // ←ここ
     }
   };
 
@@ -357,7 +383,7 @@ const HealthLogApp = () => {
         console.log(
           `比較: ${formattedLogDate} === ${selectedDate} → ${
             formattedLogDate === selectedDate
-          }`
+          }`,
         );
         return formattedLogDate === selectedDate;
       })
@@ -494,15 +520,37 @@ const HealthLogApp = () => {
         }}
       >
         <h3>💊 カスタム薬一覧（仮表示）</h3>
-        <MedForm onAdd={handleAddMed} mode={mode} />
+        <MedForm
+          initialData={
+            editingMed
+              ? {
+                  id: editingMed.id,
+                  name: editingMed.name,
+                  dosage: editingMed.dosage || "", // もし空なら "" を入れる
+                  frequency: editingMed.timing || "", // もし空なら "" を入れる
+                }
+              : undefined
+          }
+          onSuccess={() => setEditingMed(undefined)}
+        />
+
+        <MedList
+          meds={customMeds}
+          onDelete={handleDelete}
+          onEdit={(med: StoredMed) => {
+            console.log("編集ボタン押されたで！:", med); // ← これを足して確認！
+            setEditingMed(med);
+          }}
+        />
+
         {medsLoading ? (
           <p>読み込み中...</p>
         ) : customMeds.length === 0 ? (
           <p>登録された薬はありません</p>
         ) : (
           <ul>
-            {customMeds.map((med) => (
-              <li key={med.id}>
+            {customMeds.map((med, index) => (
+              <li key={index}>
                 {med.name}
                 {med.dosage && ` / ${med.dosage}`}
                 {med.timing && ` / ${med.timing}`}
@@ -544,7 +592,6 @@ const HealthLogApp = () => {
         editTargetId={editTarget ? editTarget.id : null}
         isSaving={isSaving} // 🔸 追加
         customMeds={customMeds}
-        customMedsCheck={customMedsCheck}
         onCustomMedsChange={handleCustomMedsChange}
       />
       <button
