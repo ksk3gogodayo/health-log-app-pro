@@ -102,7 +102,7 @@ const HealthLogApp = () => {
     return () => unsub();
   }, []);
 
-  const { logs, addLog, deleteLog, updateLog } = useHealthLogs(user?.uid);
+  const { logs, deleteLog, updateLog } = useHealthLogs(user?.uid);
 
   useEffect(() => {
     const random = Math.floor(Math.random() * messages.length);
@@ -252,17 +252,6 @@ const HealthLogApp = () => {
       console.error("削除失敗:", error);
       alert("削除に失敗しました");
     }
-  };
-
-  // ボタンスタイル共通化
-  const buttonStyle = {
-    backgroundColor: "#007bff",
-    color: "white",
-    border: "none",
-    padding: "8px 12px",
-    borderRadius: "4px",
-    cursor: "pointer",
-    marginBottom: "10px",
   };
 
   // カレンダーで選んだ日付に合わせてログを絞る
