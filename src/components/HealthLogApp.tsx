@@ -15,7 +15,7 @@ import { useMeds } from "../hooks/useMeds"; // カスタム薬のフック
 // type CalendarValue = Date | Date[] | null;
 // type Value = Date | Date[] | null;
 import { saveNewHealthLog } from "../features/healthLog/services/saveNewHealthLog";
-import type { StoredMed } from "@/types/meds";
+import type { StoredMed } from "../types/meds";
 import MedList from "./MedList";
 
 // 薬チェック用の型
@@ -56,8 +56,6 @@ const HealthLogApp = () => {
     Record<string, boolean>
   >({});
 
-  const [date, setDate] = useState<string>("");
-  const [time, setTime] = useState<string>("");
   const [pollenLevel, setPollenLevel] = useState<PollenLevel | "">("");
   const [todayMessage, setTodayMessage] = useState("");
   const [editTarget, setEditTarget] = useState<LogItem | null>(null);
@@ -211,8 +209,6 @@ const HealthLogApp = () => {
       setMemo(log.memo);
       setMeds(log.meds);
       setPollenLevel(log.pollenLevel);
-      setDate(log.date);
-      setTime(log.time);
       setCustomMedsCheck(log.customMedsCheck || {}); // ←ここ
     }
   };
