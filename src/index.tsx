@@ -1,10 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
 // import reportWebVitals from './reportWebVitals';
 
-const container = document.getElementById('root');
+const container = document.getElementById("root");
 if (!container) {
   throw new Error("ルート要素が見つかりませんでした");
 }
@@ -13,7 +13,7 @@ const root = ReactDOM.createRoot(container); // ✅ container は HTMLElement �
 root.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 // reportWebVitals();
