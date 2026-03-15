@@ -5,59 +5,55 @@
 個人の健康・体調記録を効率よく記録・振り返りできる Web アプリです。  
 React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分離・最適化しました。
 
-<!-- ===== 🎯 DESIGN INTENT ===== -->
 ## 🎯 設計意図（Why & What）
 
 - **課題背景**  
   潰瘍性大腸炎 (UC) の再燃サインを見逃さないよう、  
-  服薬・体調・ストレス要因を **“3タップ” で記録 → カレンダーで振り返り** できるツールが欲しかった。
-
+  服薬・体調・ストレス要因を **"3タップ" で記録 → カレンダーで振り返り** できるツールが欲しかった。
 - **ターゲット**  
-  *自分* ＋ 同じ慢性疾患を抱える家族・仲間、そして主治医との情報共有。
-
-- **ゴール**  
-  1. 記録コストを徹底的に下げて “毎日続く” UI/UX  
-  2. ログを **Firestore** に集約し、多デバイスでシームレス閲覧  
-  3. データポータビリティ確保（Markdown / CSV Export 検討中）
+  _自分_ ＋ 同じ慢性疾患を抱える家族・仲間、そして主治医との情報共有。
+- **ゴール**
+  1. 記録コストを徹底的に下げて "毎日続く" UI/UX
+  2. ログを **Firestore** に集約し、多デバイスでシームレス閲覧
+  3. データポータビリティ確保（CSV Export 検討中）
 
 ---
 
-<!-- ===== 🛠 TECH STACK ===== -->
 ## 🛠 技術選択（How）
 
-| 階層 / 機能 | 採用技術 | 選定理由 |
-| --- | --- | --- |
-| Frontend | **React 18 + Vite** | 超高速 HMR とシンプル設定 |
-| 状態管理 | React Hooks（`useState` / `useReducer`）| 小〜中規模で十分・学習コスト低 |
-| UI | CSS Modules<br>Tailwind (一部) | 既存 CSS を活かしつつ、ユーティリティで速度アップ |
-| Authentication | **Firebase Auth** | メールリンク式でパスレス、実装 5 分 |
-| Database | **Firestore** | スキーマレスで POC 最速、リアルタイム購読 |
-| Hosting / CI | **Vercel** | GitHub PR → Preview URL 自動生成でレビューフロー楽 |
-| テスト (予定) | Playwright | E2E で回帰バグ検知 |
-| 図管理 | Figma | 画面遷移図 / Arch 図共有 |
+| 階層 / 機能    | 採用技術                                 | 選定理由                                  |
+| -------------- | ---------------------------------------- | ----------------------------------------- |
+| Frontend       | **React 19 + CRA**                       | 安定した構成・TypeScript対応              |
+| 状態管理       | React Hooks（`useState` / `useReducer`） | 小〜中規模で十分・学習コスト低            |
+| UI             | CSS Modules                              | 既存 CSS を活かしつつ保守性を確保         |
+| Authentication | **Firebase Auth**                        | Google / メール / ゲストログイン対応      |
+| Database       | **Firestore**                            | スキーマレスで POC 最速、リアルタイム購読 |
+| Hosting / CI   | **Vercel**                               | GitHub push → 自動デプロイ                |
+| テスト (予定)  | Playwright                               | E2E で回帰バグ検知                        |
 
 ---
 
-<!-- ===== 📚 LEARNINGS ===== -->
 ## 📚 学び・詰まったこと（Learnings）
 
 1. **`useState` Lazy 初期化**  
-   – 読み込み時の不要フェッチを 0 にして TTI 改善  
+   – 読み込み時の不要フェッチを 0 にして TTI 改善
 2. **Timezone 問題**  
-   – UTC 保管で JST が 1 日ズレ → `toLocaleDateString('ja-JP')` で解決  
+   – UTC 保管で JST が 1 日ズレ → `toLocaleDateString('ja-JP')` で解決
 3. **初 PR → レビュー → マージ 完走**  
-   – `feature/markdown-export` ブランチで PR デビュー、GitHub Flow を体感  
-4. **README リッチ化**  
-   – スクショを `docs/` に分離、バッジ追加でファーストインプレッション向上  
-5. **型分離 (`LogItem` vs `NewLogItem`)**  
+   – `feature/markdown-export` ブランチで PR デビュー、GitHub Flow を体感
+4. **型分離 (`LogItem` vs `NewLogItem`)**  
    – Firestore 書き込み専用型を分け、`Omit<...,'id'>` の地獄を回避
+5. **CRA と Vite の環境変数の違い**  
+   – `VITE_` → `REACT_APP_` へ統一、`.env` 管理を整理
+6. **Firebase Authorized domains の設定**  
+   – Vercel デプロイ後に `auth/unauthorized-domain` エラー → Firebase Console で解決
 
 ### 今後の TODO
-- [ ] Playwright で Happy-path E2E テスト  
-- [ ] `GET latest 10` のページネーション + 無限スクロール  
-- [ ] Next.js 版を派生させて CSR / SSR 比較  
-- [ ] ダークモード + Lottie アニメ実装  
-- [ ] CSV / Markdown Export → 医師への共有をワンクリック化
+
+- [ ] Playwright で Happy-path E2E テスト
+- [ ] ページネーション + 無限スクロール
+- [ ] ダークモード + Lottie アニメ実装
+- [ ] CSV Export → 医師への共有をワンクリック化
 
 ---
 
@@ -70,13 +66,19 @@ React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分
 
 ---
 
-## 📝 機能
-- 3タップで体調 + 服薬を記録  
-- カレンダーで日別ログを閲覧  
+## 📝 機能（実装済み）
+
+- 3タップで体調 + 服薬を記録
+- カレンダーで日別ログを閲覧
 - マルチデバイス対応 (Responsive)
-- Firebase Auth でログイン
+- **Firebase Auth（Google / メール / ゲストログイン）✅**
+- **ユーザーIDでFirestoreデータを分離 ✅**
+- ログの編集・削除
+- Markdown形式でのログエクスポート
 
 👉 **詳細仕様はこちら** → [docs/FUNCTIONS.md](docs/FUNCTIONS.md)
+
+---
 
 ## 🔗 デプロイURL
 
@@ -84,110 +86,26 @@ React + Firebase（Firestore / Auth）を用い、プロジェクト構成を分
 
 ## 🚀 ローカルでの実行手順
 
-以下の手順でローカル開発環境を立ち上げられます。
-
 ```bash
 git clone https://github.com/ksk3gogodayo/health-log-app-pro.git
 cd health-log-app-pro
 npm install
-npm run dev
+npm run start
 ```
 
-※ Firebaseプロジェクトのセットアップが必要な場合があります。
-
-## 📌 今後の予定
-
-- ログの編集・削除機能
-- ユーザーごとのデータ保存整理
-- ダークモード対応
+※ `.env` に Firebase の環境変数を設定してください。
 
 ---
 
 ## 🙌 補足
 
 このアプリは、React / TypeScript / Firebase を学習しながら「実務構成」を意識して設計したポートフォリオです。  
-より現場に近い構成で、機能を拡張しやすく保守性を高めています。
+実生活の課題をもとに開発し、認証・Firestore設計・カスタムフックによるロジック分離など、実務で使われる技術を意識しています。
 
-このアプリは、実生活の課題をもとにReact/TypeScriptで開発しました。設計段階からAI（ChatGPT）と共に試行錯誤を重ねています。
-
-## 🎯 開発の動機（日本語）
-
-慢性症状の経過観察や、医師との相談に役立つよう  
-自分で体調と服薬の記録をつけられるアプリを作成しました。  
-継続的に使えるよう、UIと操作性を重視しています。
-
-📣 ご意見・レビュー大歓迎です！  
-GitHub IssuesやPull Requestでの提案もお気軽にどうぞ。
+📣 ご意見・レビュー大歓迎です！
 
 ---
 
-<!-- ===== 🌐 English Section ===== -->
-
-# Health Log App Pro 🩺🌸
-A web app that lets you **log symptoms & meds in three taps** and review them on a calendar.  
-Built with React, TypeScript, and Firebase (Firestore / Auth).
-
-## 🎯 Design Intent (Why & What)
-- **Background**  
-  Wanted a quick way to spot flare-ups of ulcerative colitis (UC) by logging **symptoms, meds, and stress factors** in seconds.
-- **Target Users**  
-  Myself, family or friends with chronic illness, and my doctor.
-- **Goals**  
-  1. Ultra-low friction input → usable **every single day**  
-  2. Sync across devices via Firestore  
-  3. Ensure data portability (Markdown / CSV export in roadmap)
-
-## 🛠 Tech Stack (How)
-
-| Layer / Feature | Tech Choice | Why |
-| --- | --- | --- |
-| Frontend | React 18 + Vite | Fast HMR & minimal config |
-| State | React Hooks (`useState`, `useReducer`) | Enough for small–mid size apps |
-| UI | CSS Modules + Tailwind (partial) | Keep legacy CSS, speed up new UI |
-| Auth | Firebase Auth | Password-less email link in 5 min |
-| DB | Firestore | Schema-less, realtime, quick POC |
-| Hosting / CI | Vercel | Auto preview per PR |
-| Testing (WIP) | Playwright | E2E regression check |
-| Diagrams | Figma | Screen flow & architecture docs |
-
-## 📚 Learnings
-1. **useState Lazy Init** – cut unnecessary fetches, improved TTI  
-2. **Timezone issue** – fixed UTC → JST shift via `toLocaleDateString('ja-JP')`  
-3. **First PR flow** – `feature/markdown-export` → review → merge  
-4. **README refactor** – moved images to `docs/`, added badges  
-5. **Type split (`LogItem` vs `NewLogItem`)** – avoided `Omit<...,'id'>` pain
-
-### TODO
-- [ ] Playwright E2E tests  
-- [ ] Latest-10 pagination + infinite scroll  
-- [ ] Experimental Next.js 14 CSR/SSR comparison  
-- [ ] CSV / Markdown export for doctor sharing  
-- [ ] Dark mode + Lottie animations  
-
-## 📝 Features
-- Log symptoms + meds in three taps  
-- Browse daily logs on a calendar  
-- Responsive UI (multi-device)  
-- Firebase Auth login  
-- ✨ **Detailed spec** → [docs/FUNCTIONS.md](docs/FUNCTIONS.md)
-
-## 🚀 Demo
-[Vercel Preview](https://health-log-app-pro.vercel.app)
-
-## 💻 Local Dev
-
-```bash
-git clone https://github.com/ksk3gogodayo/health-log-app-pro.git
-cd health-log-app-pro
-npm install
-npm run dev
-```
-
----
-
-## 🖼 操作画面ギャラリー（スクリーンショット）
-
-アプリの操作イメージをまとめています。  
-スマホ／PC両方の画面をご覧いただけます👇
+## 🖼 操作画面ギャラリー
 
 ▶️ [docs/README_IMAGES.md](./docs/README_IMAGES.md)
