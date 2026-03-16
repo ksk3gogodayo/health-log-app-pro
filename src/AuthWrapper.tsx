@@ -44,7 +44,7 @@ const AuthWrapper = () => {
       >
         ログアウト
       </button>
-      <HealthLogApp />
+      <HealthLogApp uid={user.uid} masterMeds={[]} />
     </div>
   );
 };

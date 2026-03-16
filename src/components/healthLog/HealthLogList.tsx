@@ -1,6 +1,6 @@
-// components/healthLog/HealthLogList.tsx
 import React from "react";
 import { PollenLevel } from "../../types";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 type Meds = {
   asacol: boolean;
@@ -16,17 +16,29 @@ type LogItem = {
   meds: Meds;
   pollenLevel: PollenLevel | "";
   uid: string;
+  customMedsCheck?: Record<string, boolean>;
 };
 
 type Props = {
   logs: LogItem[];
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void
+  onDelete: (id: string) => void;
   onCopyMarkdown: (log: LogItem) => void;
   isEditing: (id: string) => boolean;
 };
 
-const HealthLogList: React.FC<Props> = ({ logs, onEdit, onDelete, onCopyMarkdown, isEditing }) => {
+const HealthLogList: React.FC<Props> = ({
+  logs,
+  onEdit,
+  onDelete,
+  onCopyMarkdown,
+  isEditing,
+}) => {
+  const { t } = useLanguage();
+
+  const checkedCustomMeds = (check?: Record<string, boolean>) =>
+    check ? Object.entries(check).filter(([, v]) => v).map(([name]) => name) : [];
+
   return (
     <div>
       {logs.length > 0 ? (
@@ -43,31 +55,48 @@ const HealthLogList: React.FC<Props> = ({ logs, onEdit, onDelete, onCopyMarkdown
               boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <strong>{log.date} / {log.time}</strong>
-              <div style={{
-                padding: "10px",
-                marginBottom: "5px",
-                backgroundColor: isEditing(log.id) ? "#ffeb3b" : "#f0f0f0",
-                border: isEditing(log.id) ? "2px solid #ff9800" : "1px solid #ccc",
-                borderRadius: "4px",
-              }}>
-                <button onClick={() => onEdit(log.id)}>編集</button>
-                <button onClick={() => onDelete(log.id)}>削除</button>
-                <button onClick={() => onCopyMarkdown(log)}>Markdownコピー</button>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "8px",
+              }}
+            >
+              <strong>
+                {log.date} / {log.time}
+              </strong>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "4px",
+                  padding: "6px",
+                  backgroundColor: isEditing(log.id) ? "#ffeb3b" : "#f0f0f0",
+                  border: isEditing(log.id)
+                    ? "2px solid #ff9800"
+                    : "1px solid #ccc",
+                  borderRadius: "4px",
+                }}
+              >
+                <button onClick={() => onEdit(log.id)}>{t.edit}</button>
+                <button onClick={() => onDelete(log.id)}>{t.delete}</button>
+                <button onClick={() => onCopyMarkdown(log)}>Markdown</button>
               </div>
             </div>
-            <p style={{ whiteSpace: "pre-line" }}>{log.memo}</p>
-            <ul>
+            <p style={{ whiteSpace: "pre-line", marginBottom: "8px" }}>{log.memo}</p>
+            <ul style={{ listStyle: "none", padding: 0 }}>
               <li>アサコール: {log.meds.asacol ? "✔️" : "❌"}</li>
               <li>クリアミン: {log.meds.clearmin ? "✔️" : "❌"}</li>
               <li>エビオス: {log.meds.ebios ? "✔️" : "❌"}</li>
-              <li>花粉レベル: {log.pollenLevel || "未入力"}</li>
+              <li>花粉: {log.pollenLevel || "未入力"}</li>
+              {checkedCustomMeds(log.customMedsCheck).map((name) => (
+                <li key={name}>💊 {name}: ✔️</li>
+              ))}
             </ul>
           </div>
         ))
       ) : (
-        <p>まだ記録はありません。</p>
+        <p>{t.noLogs}</p>
       )}
     </div>
   );

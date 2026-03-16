@@ -18,16 +18,20 @@ export const subscribeHealthLogs = (
   uid: string,
   onUpdate: (logs: LogItem[]) => void
 ) => {
-  const q = query(collection(db, "healthLogs"), where("uid", "==", uid));
+  const q = query(
+    collection(db, "healthLogs"),
+    where("uid", "==", uid),
+  );
   return onSnapshot(q, (snapshot) => {
-    console.log("📦 サブスクライブで受け取った snapshot:", snapshot.docs);
-    const logs = snapshot.docs.map((doc) => {
-      console.log("📘 raw doc:", doc.data()); // ←これ入れて
-      return {
-        id: doc.id,
-        ...doc.data(),
-      };
-    }) as LogItem[];
+    const logs = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as LogItem[];
+    // クライアント側で日付・時刻の降順にソート
+    logs.sort((a, b) => {
+      const dateCmp = b.date.localeCompare(a.date);
+      return dateCmp !== 0 ? dateCmp : b.time.localeCompare(a.time);
+    });
     onUpdate(logs);
   });
 };
