@@ -17,11 +17,11 @@ React / TypeScript / Firebase で構築し、Vercel にデプロイ済み。
 
 ## 技術スタック
 
-| 領域 | 技術 |
-|------|------|
-| Frontend | React 19 / TypeScript |
-| 認証 | Firebase Authentication |
-| DB | Firebase Firestore |
+| 領域              | 技術                                 |
+| ----------------- | ------------------------------------ |
+| Frontend          | React 19 / TypeScript                |
+| 認証              | Firebase Authentication              |
+| DB                | Firebase Firestore                   |
 | ホスティング / CI | Vercel（GitHub push → 自動デプロイ） |
 
 ---
@@ -35,6 +35,14 @@ React / TypeScript / Firebase で構築し、Vercel にデプロイ済み。
 - **多言語対応**（日本語 / English / Filipino を切り替え、localStorage で永続化）
 - **Markdown 形式でのログエクスポート**（1 件 / 全件コピー）
 - ログの編集・削除
+  ## 認証について
+- Googleログイン（推奨）
+- メールアドレス＋パスワード
+- ゲストログイン（匿名認証）※データはブラウザセッション限定
+
+> ゲストログインはデモ用途を想定しています。
+> アカウント登録なしで機能を試せますが、
+> データの永続化はされません。
 
 ---
 
