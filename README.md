@@ -20,6 +20,7 @@ React / TypeScript / Firebase で構築し、Vercel にデプロイ済み。
 | 領域              | 技術                                 |
 | ----------------- | ------------------------------------ |
 | Frontend          | React 19 / TypeScript                |
+| スタイル          | SCSS (Sass)                          |
 | 認証              | Firebase Authentication              |
 | DB                | Firebase Firestore                   |
 | ホスティング / CI | Vercel（GitHub push → 自動デプロイ） |
