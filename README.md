@@ -78,6 +78,14 @@ npm install
 npm start
 ```
 
+### Docker で起動
+
+```bash
+docker-compose up --build
+```
+
+ブラウザで http://localhost:3000 を開く
+
 `.env.local` に Firebase の設定値を記載してください（`.env.example` 参照）。
 
 ---
