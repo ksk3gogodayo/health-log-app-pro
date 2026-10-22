@@ -13,6 +13,7 @@ export type HealthLogFormProps = {
   onMemoChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onPollenLevelChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onCustomMedsChange: (name: string, checked: boolean) => void;
+  onMedicationTimeChange: (name: string, time: string) => void;
   onSave: () => Promise<void>;
   onCancel: () => void;
   editTargetId?: string | null;
@@ -28,12 +29,14 @@ const HealthLogForm: React.FC<HealthLogFormProps> = ({
   onMemoChange,
   onPollenLevelChange,
   onCustomMedsChange,
+  onMedicationTimeChange,
   onSave,
   onCancel,
   editTargetId,
   isSaving,
 }) => {
   const { t } = useLanguage();
+  const medicationNames = Array.from(new Set([...masterMeds, ...Object.keys(customMedsCheck).filter(name => customMedsCheck[name])]));
   const [aiComment, setAiComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -97,25 +100,35 @@ const HealthLogForm: React.FC<HealthLogFormProps> = ({
           </select>
         </div>
 
-        {/* Master meds (dynamic from Firestore) */}
-        {masterMeds.length > 0 && (
+        {/* Include previously checked items even if removed from the master list. */}
+        {medicationNames.length > 0 && (
           <div style={{ marginTop: "1rem" }}>
             <strong>{t.medCheck}</strong>
-            {masterMeds.map((name) => (
-              <label key={name} style={{ display: "block", marginBottom: "4px" }}>
-                <input
-                  type="checkbox"
-                  checked={!!customMedsCheck[name]}
-                  onChange={(e) => onCustomMedsChange(name, e.target.checked)}
-                  style={{ marginRight: "8px" }}
-                />
-                {name}
-                {customMedsCheck[name] && formatMedicationTime(customMedsCheckedAt[name]) && (
-                  <span style={{ marginLeft: "8px", whiteSpace: "nowrap" }}>
-                    {formatMedicationTime(customMedsCheckedAt[name])}（日本時間）
-                  </span>
+            {medicationNames.map((name) => (
+              <div key={name} style={{ marginBottom: "12px" }}>
+                <label style={{ display: "block", minHeight: "44px", paddingTop: "10px" }}>
+                  <input
+                    type="checkbox"
+                    checked={!!customMedsCheck[name]}
+                    onChange={(e) => onCustomMedsChange(name, e.target.checked)}
+                    style={{ marginRight: "8px" }}
+                  />
+                  {name}
+                </label>
+                {customMedsCheck[name] && (
+                  <label style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                    <span>時刻（日本時間）</span>
+                    <input
+                      type="time"
+                      aria-label={name + "の時刻（日本時間）"}
+                      value={formatMedicationTime(customMedsCheckedAt[name])}
+                      onChange={(e) => onMedicationTimeChange(name, e.target.value)}
+                      step={60}
+                      style={{ minHeight: "44px", fontSize: "16px", maxWidth: "100%" }}
+                    />
+                  </label>
                 )}
-              </label>
+              </div>
             ))}
           </div>
         )}

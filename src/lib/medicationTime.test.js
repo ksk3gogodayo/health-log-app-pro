@@ -1,4 +1,4 @@
-import { updateMedicationTime, formatMedicationTime } from "./medicationTime";
+import { updateMedicationTime, formatMedicationTime, editMedicationTime } from "./medicationTime";
 
 test("morning, noon and evening keep independent check instants", () => {
   let times = updateMedicationTime({}, "朝", true, false, "2026-10-23T23:00:00Z");
@@ -25,4 +25,16 @@ test("Japanese midnight is 00:00 and missing historical times stay blank", () =>
   expect(formatMedicationTime("2026-10-23T15:00:00Z")).toBe("00:00");
   expect(formatMedicationTime()).toBe("");
   expect(formatMedicationTime("invalid")).toBe("");
+});
+
+
+test("editing time keeps the original Japan day across UTC midnight", () => {
+  expect(editMedicationTime("2026-10-23T23:00:00Z", "00:15", "2026-11-01"))
+    .toBe("2026-10-23T15:15:00.000Z");
+});
+
+test("historical missing times use the record day and invalid values are rejected", () => {
+  expect(editMedicationTime(undefined, "07:30", "2025-01-01")).toBe("2024-12-31T22:30:00.000Z");
+  expect(editMedicationTime(undefined, "24:00", "2025-01-01")).toBeUndefined();
+  expect(editMedicationTime(undefined, "07:30", "2025-02-30")).toBeUndefined();
 });

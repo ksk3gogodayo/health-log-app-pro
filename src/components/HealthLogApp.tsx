@@ -9,7 +9,7 @@ import { useHealthLogs } from "../hooks/useHealthLogs";
 import { saveNewHealthLog } from "../features/healthLog/services/saveNewHealthLog";
 import { useLanguage } from "../contexts/LanguageContext";
 
-import { formatMedicationTime, updateMedicationTime } from "../lib/medicationTime";
+import { formatMedicationTime, updateMedicationTime, editMedicationTime } from "../lib/medicationTime";
 
 const motivationMessages = [
   "🌿 今日もおつかれさま",
@@ -95,6 +95,22 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
     setCustomMedsCheck((prev) => ({ ...prev, [name]: checked }));
   };
 
+  const handleMedicationTimeChange = (name: string, time: string) => {
+    if (!customMedsCheck[name]) return;
+    const fallbackDate = editTarget?.date || selectedDate ||
+      new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    setCustomMedsCheckedAt((prev) => {
+      const next = { ...prev };
+      if (!time) {
+        delete next[name];
+      } else {
+        const instant = editMedicationTime(prev[name], time, padDate(fallbackDate));
+        if (instant) next[name] = instant;
+      }
+      return next;
+    });
+  };
+
   const handleEdit = (id: string) => {
     const log = logs.find((l) => l.id === id);
     if (log) {
@@ -118,8 +134,8 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
       memo,
       meds,
       pollenLevel,
-      date: formattedDate,
-      time: now.toLocaleTimeString(),
+      date: editTarget?.date || formattedDate,
+      time: editTarget?.time || now.toLocaleTimeString(),
       uid,
       customMedsCheck,
       customMedsCheckedAt,
@@ -282,6 +298,7 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
         onMemoChange={(e) => setMemo(e.target.value)}
         onPollenLevelChange={(e) => setPollenLevel(e.target.value as PollenLevel)}
         onCustomMedsChange={handleCustomMedsChange}
+        onMedicationTimeChange={handleMedicationTimeChange}
         onSave={handleSave}
         onCancel={handleCancel}
         editTargetId={editTarget ? editTarget.id : null}
