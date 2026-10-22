@@ -15,6 +15,7 @@ export interface LogItem {
   pollenLevel: PollenLevel;
   uid: string;
   customMedsCheck?: Record<string, boolean>; // ← ★追加
+  customMedsCheckedAt?: Record<string, string>; // ISO instants, keyed like customMedsCheck
   aiComment?: string; // ←ここ追加！AIコメントなど
 }
 

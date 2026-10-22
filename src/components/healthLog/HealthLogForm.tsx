@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import { PollenLevel } from "../../types";
 import { useLanguage } from "../../contexts/LanguageContext";
 
+import { formatMedicationTime } from "../../lib/medicationTime";
+
 export type HealthLogFormProps = {
   memo: string;
   pollenLevel: PollenLevel | "";
   customMedsCheck: Record<string, boolean>;
+  customMedsCheckedAt?: Record<string, string>;
   masterMeds: string[];
   onMemoChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onPollenLevelChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -20,6 +23,7 @@ const HealthLogForm: React.FC<HealthLogFormProps> = ({
   memo,
   pollenLevel,
   customMedsCheck,
+  customMedsCheckedAt = {},
   masterMeds,
   onMemoChange,
   onPollenLevelChange,
@@ -106,6 +110,11 @@ const HealthLogForm: React.FC<HealthLogFormProps> = ({
                   style={{ marginRight: "8px" }}
                 />
                 {name}
+                {customMedsCheck[name] && formatMedicationTime(customMedsCheckedAt[name]) && (
+                  <span style={{ marginLeft: "8px", whiteSpace: "nowrap" }}>
+                    {formatMedicationTime(customMedsCheckedAt[name])}（日本時間）
+                  </span>
+                )}
               </label>
             ))}
           </div>

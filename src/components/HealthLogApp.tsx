@@ -9,6 +9,8 @@ import { useHealthLogs } from "../hooks/useHealthLogs";
 import { saveNewHealthLog } from "../features/healthLog/services/saveNewHealthLog";
 import { useLanguage } from "../contexts/LanguageContext";
 
+import { formatMedicationTime, updateMedicationTime } from "../lib/medicationTime";
+
 const motivationMessages = [
   "🌿 今日もおつかれさま",
   "😊 記録しててえらいね",
@@ -49,6 +51,7 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
     ebios: false,
   });
   const [customMedsCheck, setCustomMedsCheck] = useState<Record<string, boolean>>({});
+  const [customMedsCheckedAt, setCustomMedsCheckedAt] = useState<Record<string, string>>({});
   const [pollenLevel, setPollenLevel] = useState<PollenLevel | "">("");
   const [todayMessage, setTodayMessage] = useState("");
   const [editTarget, setEditTarget] = useState<LogItem | null>(null);
@@ -85,6 +88,10 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
   };
 
   const handleCustomMedsChange = (name: string, checked: boolean) => {
+    const now = new Date().toISOString();
+    setCustomMedsCheckedAt((prev) =>
+      updateMedicationTime(prev, name, checked, !!customMedsCheck[name], now)
+    );
     setCustomMedsCheck((prev) => ({ ...prev, [name]: checked }));
   };
 
@@ -96,6 +103,7 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
       setMeds(log.meds);
       setPollenLevel(log.pollenLevel);
       setCustomMedsCheck(log.customMedsCheck || {});
+      setCustomMedsCheckedAt(log.customMedsCheckedAt || {});
     }
   };
 
@@ -114,6 +122,7 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
       time: now.toLocaleTimeString(),
       uid,
       customMedsCheck,
+      customMedsCheckedAt,
     };
 
     try {
@@ -129,6 +138,8 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
       }
     } catch (error) {
       console.error("Firestore保存エラー:", error);
+      alert("保存できませんでした。入力内容を残しています。もう一度お試しください。");
+      return;
     } finally {
       setIsSaving(false);
     }
@@ -137,6 +148,7 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
     setMeds({ asacol: false, clearmin: false, ebios: false });
     setPollenLevel("");
     setCustomMedsCheck({});
+    setCustomMedsCheckedAt({});
   };
 
   const handleCancel = () => {
@@ -144,6 +156,7 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
     setMeds({ asacol: false, clearmin: false, ebios: false });
     setPollenLevel("");
     setCustomMedsCheck({});
+    setCustomMedsCheckedAt({});
     setEditTarget(null);
   };
 
@@ -160,7 +173,11 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
   };
 
   const formatToMarkdown = (log: LogItem & { pollenLevel: PollenLevel | "" }) => {
-    return `## ${log.date}｜${t.healthLog}\n\n- 🕒 ${log.time}\n- 📝 ${log.memo}\n- 💊 アサコール ${log.meds.asacol ? "✔️" : "❌"} / クリアミン ${log.meds.clearmin ? "✔️" : "❌"} / エビオス ${log.meds.ebios ? "✔️" : "❌"}\n- 🍃 花粉：${log.pollenLevel || "未入力"}\n`;
+    const medicationLines = Object.entries(log.customMedsCheck || {})
+      .filter(([, checked]) => checked)
+      .map(([name]) => `- 💊 ${name}: ✔️ ${formatMedicationTime(log.customMedsCheckedAt?.[name])}`.trimEnd())
+      .join("\n");
+    return `## ${log.date}｜${t.healthLog}\n\n- 🕒 ${log.time}\n- 📝 ${log.memo}\n- 💊 アサコール ${log.meds.asacol ? "✔️" : "❌"} / クリアミン ${log.meds.clearmin ? "✔️" : "❌"} / エビオス ${log.meds.ebios ? "✔️" : "❌"}\n- 🍃 花粉：${log.pollenLevel || "未入力"}\n${medicationLines ? medicationLines + "\n" : ""}`;
   };
 
   const copyAllLogsMarkdown = () => {
@@ -260,6 +277,7 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
         memo={memo}
         pollenLevel={pollenLevel}
         customMedsCheck={customMedsCheck}
+        customMedsCheckedAt={customMedsCheckedAt}
         masterMeds={masterMeds}
         onMemoChange={(e) => setMemo(e.target.value)}
         onPollenLevelChange={(e) => setPollenLevel(e.target.value as PollenLevel)}
@@ -325,7 +343,7 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
                     Object.entries(log.customMedsCheck)
                       .filter(([, v]) => v)
                       .map(([name]) => (
-                        <p key={name}>💊 {name}: ✔️</p>
+                        <p key={name}>💊 {name}: ✔️ {formatMedicationTime(log.customMedsCheckedAt?.[name])}</p>
                       ))}
                   <div style={{ marginTop: "8px" }}>
                     <button onClick={() => handleEdit(log.id)} style={{ marginRight: "8px" }}>

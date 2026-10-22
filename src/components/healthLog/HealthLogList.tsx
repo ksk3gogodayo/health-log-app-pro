@@ -2,6 +2,8 @@ import React from "react";
 import { PollenLevel } from "../../types";
 import { useLanguage } from "../../contexts/LanguageContext";
 
+import { formatMedicationTime } from "../../lib/medicationTime";
+
 type Meds = {
   asacol: boolean;
   clearmin: boolean;
@@ -17,6 +19,7 @@ type LogItem = {
   pollenLevel: PollenLevel | "";
   uid: string;
   customMedsCheck?: Record<string, boolean>;
+  customMedsCheckedAt?: Record<string, string>;
 };
 
 type Props = {
@@ -90,7 +93,7 @@ const HealthLogList: React.FC<Props> = ({
               <li>エビオス: {log.meds.ebios ? "✔️" : "❌"}</li>
               <li>花粉: {log.pollenLevel || "未入力"}</li>
               {checkedCustomMeds(log.customMedsCheck).map((name) => (
-                <li key={name}>💊 {name}: ✔️</li>
+                <li key={name}>💊 {name}: ✔️ {formatMedicationTime(log.customMedsCheckedAt?.[name])}</li>
               ))}
             </ul>
           </div>
