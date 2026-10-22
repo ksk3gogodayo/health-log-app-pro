@@ -84,11 +84,6 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
     }
   };
 
-  const handleMedsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setMeds((prev) => ({ ...prev, [name]: checked }));
-  };
-
   const handleCustomMedsChange = (name: string, checked: boolean) => {
     setCustomMedsCheck((prev) => ({ ...prev, [name]: checked }));
   };
@@ -263,12 +258,10 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
       {/* Form */}
       <HealthLogForm
         memo={memo}
-        meds={meds}
         pollenLevel={pollenLevel}
         customMedsCheck={customMedsCheck}
         masterMeds={masterMeds}
         onMemoChange={(e) => setMemo(e.target.value)}
-        onMedsChange={handleMedsChange}
         onPollenLevelChange={(e) => setPollenLevel(e.target.value as PollenLevel)}
         onCustomMedsChange={handleCustomMedsChange}
         onSave={handleSave}

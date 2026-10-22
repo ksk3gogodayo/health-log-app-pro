@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import { Meds, PollenLevel } from "../../types";
+import { PollenLevel } from "../../types";
 import { useLanguage } from "../../contexts/LanguageContext";
 
 export type HealthLogFormProps = {
   memo: string;
-  meds: Meds;
   pollenLevel: PollenLevel | "";
   customMedsCheck: Record<string, boolean>;
   masterMeds: string[];
   onMemoChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onMedsChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPollenLevelChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onCustomMedsChange: (name: string, checked: boolean) => void;
   onSave: () => Promise<void>;
@@ -20,12 +18,10 @@ export type HealthLogFormProps = {
 
 const HealthLogForm: React.FC<HealthLogFormProps> = ({
   memo,
-  meds,
   pollenLevel,
   customMedsCheck,
   masterMeds,
   onMemoChange,
-  onMedsChange,
   onPollenLevelChange,
   onCustomMedsChange,
   onSave,
@@ -86,25 +82,6 @@ const HealthLogForm: React.FC<HealthLogFormProps> = ({
           style={{ width: "100%", marginTop: "1rem" }}
         />
 
-        {/* Fixed medications */}
-        <div style={{ marginTop: "1rem" }}>
-          <strong>{t.medCheck}</strong>
-          <div style={{ marginTop: "8px" }}>
-            {(["asacol", "clearmin", "ebios"] as const).map((key) => (
-              <label key={key} style={{ marginRight: "16px" }}>
-                <input
-                  type="checkbox"
-                  name={key}
-                  checked={meds[key]}
-                  onChange={onMedsChange}
-                  style={{ marginRight: "4px" }}
-                />
-                {key === "asacol" ? "アサコール" : key === "clearmin" ? "クリアミン" : "エビオス"}
-              </label>
-            ))}
-          </div>
-        </div>
-
         {/* Pollen level */}
         <div style={{ marginTop: "1rem" }}>
           <select value={pollenLevel} onChange={onPollenLevelChange}>
@@ -119,6 +96,7 @@ const HealthLogForm: React.FC<HealthLogFormProps> = ({
         {/* Master meds (dynamic from Firestore) */}
         {masterMeds.length > 0 && (
           <div style={{ marginTop: "1rem" }}>
+            <strong>{t.medCheck}</strong>
             {masterMeds.map((name) => (
               <label key={name} style={{ display: "block", marginBottom: "4px" }}>
                 <input
