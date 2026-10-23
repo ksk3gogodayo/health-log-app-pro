@@ -8,7 +8,6 @@ import {
   deleteDoc,
   addDoc,
   setDoc,
-  getDoc,
   onSnapshot,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
@@ -88,12 +87,6 @@ export const updateHealthLog = async (id: string, data: any) => {
 export const deleteHealthLog = async (id: string) => {
   try {
     const docRef = doc(db, "healthLogs", id);
-
-    // 🔍 一旦読み込んで uid 確認
-    const snap = await getDoc(docRef);
-    const data = snap.data();
-    console.log("📦 削除対象ログの中身:", data);
-    console.log("🧑‍💻 現在のユーザーuid:", auth.currentUser?.uid);
 
     await deleteDoc(docRef);
     console.log("🗑 Firestore削除完了:", id);
