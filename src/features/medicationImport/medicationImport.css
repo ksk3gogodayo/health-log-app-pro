@@ -1,0 +1,92 @@
+.med-import {
+  margin: 24px 0;
+  padding: 16px;
+  background: #f6f8fb;
+  color: #17212f;
+  border: 1px solid #9aa9ba;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+.med-import * {
+  box-sizing: border-box;
+}
+.med-import p {
+  line-height: 1.6;
+  margin: 10px 0;
+}
+.med-import button,
+.med-import select,
+.med-import input:not([type="checkbox"]) {
+  min-height: 44px;
+  font-size: 16px;
+  max-width: 100%;
+  border-radius: 6px;
+  border: 1px solid #68798e;
+  padding: 9px;
+  background: #fff;
+  color: #17212f;
+}
+.med-import button {
+  margin: 6px 6px 6px 0;
+  cursor: pointer;
+}
+.med-import button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.med-import label {
+  display: block;
+  margin: 10px 0;
+  line-height: 1.5;
+}
+.med-import select,
+.med-import input:not([type="checkbox"]) {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+}
+.med-import input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+.med-import-card {
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid #a0adbc;
+  border-radius: 8px;
+  background: #fff;
+}
+.med-import-card > label:first-child {
+  font-weight: bold;
+}
+.med-import [role="alert"] {
+  color: #a01616;
+}
+.med-import summary {
+  min-height: 44px;
+  padding: 12px 0;
+  cursor: pointer;
+}
+.med-import a {
+  color: #0756a5;
+}
+.med-import-help {
+  font-size: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  .med-import {
+    background: #18222d;
+    color: #f4f6fa;
+  }
+  .med-import-card {
+    background: #222f3d;
+  }
+  .med-import [role="alert"] {
+    color: #ffb6b6;
+  }
+  .med-import a {
+    color: #a3d0ff;
+  }
+}

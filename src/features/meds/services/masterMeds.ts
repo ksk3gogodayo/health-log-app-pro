@@ -1,4 +1,10 @@
-import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  onSnapshot,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
 import { db } from "../../../firebase";
 
 const getMedsDocRef = (uid: string) =>
@@ -15,17 +21,18 @@ export const subscribeMasterMeds = (
   });
 };
 
-export const addMasterMed = async (uid: string, name: string): Promise<void> => {
+export const addMasterMed = async (
+  uid: string,
+  name: string,
+): Promise<void> => {
   const ref = getMedsDocRef(uid);
-  const snap = await getDoc(ref);
-  const current: string[] = (snap.data()?.names as string[]) || [];
-  if (current.includes(name)) return;
-  await setDoc(ref, { names: [...current, name] });
+  await setDoc(ref, { names: arrayUnion(name) }, { merge: true });
 };
 
-export const deleteMasterMed = async (uid: string, name: string): Promise<void> => {
+export const deleteMasterMed = async (
+  uid: string,
+  name: string,
+): Promise<void> => {
   const ref = getMedsDocRef(uid);
-  const snap = await getDoc(ref);
-  const current: string[] = (snap.data()?.names as string[]) || [];
-  await setDoc(ref, { names: current.filter((n) => n !== name) });
+  await setDoc(ref, { names: arrayRemove(name) }, { merge: true });
 };

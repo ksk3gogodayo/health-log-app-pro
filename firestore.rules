@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    match /healthLogs/{id} {
+      allow read, delete: if owner(resource.data.uid);
+      allow create: if owner(request.resource.data.uid);
+      allow update: if owner(resource.data.uid) && request.resource.data.uid == resource.data.uid;
+    }
+    match /users/{uid}/masterData/{id} { allow read, write: if owner(uid); }
+    match /users/{uid}/meds/{id} { allow read, write: if owner(uid); }
+    match /users/{uid}/medicationImports/{id} {
+      allow read, delete: if owner(uid);
+      allow create: if owner(uid)
+        && request.resource.data.keys().hasOnly(['name','amount','unit','codeType','code','usage','quantity','quantityUnit','dosageForm','date','pharmacy','pharmacyCode','prescriber','rp','notes','checkName','sourceVersion','source','importedAt'])
+        && request.resource.data.source == 'jahis-qr'
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 2000
+        && request.resource.data.importedAt == request.time;
+      allow update: if false;
+    }
+    // Legacy component: preserve owner-scoped records only.
+    match /meds/{id} {
+      allow read, delete: if owner(resource.data.uid);
+      allow create: if owner(request.resource.data.uid);
+      allow update: if owner(resource.data.uid) && request.resource.data.uid == resource.data.uid;
+    }
+  }
+}

@@ -5,6 +5,10 @@ import {
   deleteMasterMed,
 } from "../features/meds/services/masterMeds";
 
+const MedicationImport = React.lazy(
+  () => import("../features/medicationImport/MedicationImport"),
+);
+
 type Props = {
   uid: string;
   masterMeds: string[];
@@ -42,6 +46,7 @@ const Settings: React.FC<Props> = ({ uid, masterMeds }) => {
           placeholder={t.medName}
           style={{
             flex: 1,
+            minWidth: 0,
             padding: "8px 12px",
             borderRadius: "6px",
             border: "1px solid #ccc",
@@ -62,6 +67,12 @@ const Settings: React.FC<Props> = ({ uid, masterMeds }) => {
           {t.addMed}
         </button>
       </div>
+
+      {process.env.REACT_APP_MEDICATION_IMPORT_ENABLED === "true" && (
+        <React.Suspense fallback={<p>読み込み中…</p>}>
+          <MedicationImport key={uid} uid={uid} masterMeds={masterMeds} />
+        </React.Suspense>
+      )}
 
       {masterMeds.length === 0 ? (
         <p style={{ color: "#888" }}>{t.noMeds}</p>
