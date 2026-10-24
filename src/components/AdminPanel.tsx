@@ -1,3 +1,4 @@
+import { pollenLabel } from "../lib/pollenLabel";
 import { checkedLegacyMedications } from "../lib/legacyMedications";
 
 
@@ -59,7 +60,7 @@ const AdminPanel = () => {
             {checkedLegacyMedications(log.meds).map((name) => (
               <li key={name}>{name}: ✔️</li>
             ))}
-            <li>花粉レベル: {log.pollenLevel}</li>
+            {log.pollenLevel && <li>花粉レベル: {pollenLabel(log.pollenLevel)}</li>}
           </ul>
           <small>UID: {log.uid}</small>
         </div>

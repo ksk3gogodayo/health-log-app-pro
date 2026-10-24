@@ -1,3 +1,4 @@
+import { pollenLabel } from "../../lib/pollenLabel";
 import { checkedLegacyMedications } from "../../lib/legacyMedications";
 import React from "react";
 import { PollenLevel } from "../../types";
@@ -92,7 +93,7 @@ const HealthLogList: React.FC<Props> = ({
               {checkedLegacyMedications(log.meds).map((name) => (
                 <li key={name}>{name}: ✔️</li>
               ))}
-              <li>花粉: {log.pollenLevel || "未入力"}</li>
+              {log.pollenLevel && <li>花粉: {pollenLabel(log.pollenLevel)}</li>}
               {checkedCustomMeds(log.customMedsCheck).map((name) => (
                 <li key={name}>💊 {name}: ✔️ {formatMedicationTime(log.customMedsCheckedAt?.[name])}</li>
               ))}
