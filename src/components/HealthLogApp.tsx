@@ -1,3 +1,4 @@
+import { checkedLegacyMedications } from "../lib/legacyMedications";
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -193,7 +194,7 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
       .filter(([, checked]) => checked)
       .map(([name]) => `- 💊 ${name}: ✔️ ${formatMedicationTime(log.customMedsCheckedAt?.[name])}`.trimEnd())
       .join("\n");
-    return `## ${log.date}｜${t.healthLog}\n\n- 🕒 ${log.time}\n- 📝 ${log.memo}\n- 💊 アサコール ${log.meds.asacol ? "✔️" : "❌"} / クリアミン ${log.meds.clearmin ? "✔️" : "❌"} / エビオス ${log.meds.ebios ? "✔️" : "❌"}\n- 🍃 花粉：${log.pollenLevel || "未入力"}\n${medicationLines ? medicationLines + "\n" : ""}`;
+    return `## ${log.date}｜${t.healthLog}\n\n- 🕒 ${log.time}\n- 📝 ${log.memo}\n${checkedLegacyMedications(log.meds).map((name) => `- 💊 ${name}: ✔️\n`).join("")}- 🍃 花粉：${log.pollenLevel || "未入力"}\n${medicationLines ? medicationLines + "\n" : ""}`;
   };
 
   const copyAllLogsMarkdown = () => {
@@ -349,11 +350,9 @@ const HealthLogApp: React.FC<Props> = ({ uid, masterMeds }) => {
               </div>
               {isOpen && (
                 <div style={{ marginTop: "8px" }}>
-                  <p>
-                    💊 アサコール: {log.meds.asacol ? "✔️" : "❌"} / クリアミン:{" "}
-                    {log.meds.clearmin ? "✔️" : "❌"} / エビオス:{" "}
-                    {log.meds.ebios ? "✔️" : "❌"}
-                  </p>
+                  {checkedLegacyMedications(log.meds).map((name) => (
+                    <p key={name}>💊 {name}: ✔️</p>
+                  ))}
                   <p>🍃 花粉: {log.pollenLevel || "未入力"}</p>
                   <p>📝 {log.memo}</p>
                   {log.customMedsCheck &&
