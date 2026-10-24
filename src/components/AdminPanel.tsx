@@ -1,3 +1,4 @@
+import { checkedLegacyMedications } from "../lib/legacyMedications";
 
 
 import { useEffect, useState } from "react";
@@ -55,9 +56,9 @@ const AdminPanel = () => {
           <strong>{log.date} / {log.time}</strong>
           <p>{log.memo}</p>
           <ul>
-            <li>アサコール: {log.meds.asacol ? "✔️" : "❌"}</li>
-            <li>クリアミン: {log.meds.clearmin ? "✔️" : "❌"}</li>
-            <li>エビオス: {log.meds.ebios ? "✔️" : "❌"}</li>
+            {checkedLegacyMedications(log.meds).map((name) => (
+              <li key={name}>{name}: ✔️</li>
+            ))}
             <li>花粉レベル: {log.pollenLevel}</li>
           </ul>
           <small>UID: {log.uid}</small>

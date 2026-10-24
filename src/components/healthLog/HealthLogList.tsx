@@ -1,3 +1,4 @@
+import { checkedLegacyMedications } from "../../lib/legacyMedications";
 import React from "react";
 import { PollenLevel } from "../../types";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -88,9 +89,9 @@ const HealthLogList: React.FC<Props> = ({
             </div>
             <p style={{ whiteSpace: "pre-line", marginBottom: "8px" }}>{log.memo}</p>
             <ul style={{ listStyle: "none", padding: 0 }}>
-              <li>アサコール: {log.meds.asacol ? "✔️" : "❌"}</li>
-              <li>クリアミン: {log.meds.clearmin ? "✔️" : "❌"}</li>
-              <li>エビオス: {log.meds.ebios ? "✔️" : "❌"}</li>
+              {checkedLegacyMedications(log.meds).map((name) => (
+                <li key={name}>{name}: ✔️</li>
+              ))}
               <li>花粉: {log.pollenLevel || "未入力"}</li>
               {checkedCustomMeds(log.customMedsCheck).map((name) => (
                 <li key={name}>💊 {name}: ✔️ {formatMedicationTime(log.customMedsCheckedAt?.[name])}</li>
