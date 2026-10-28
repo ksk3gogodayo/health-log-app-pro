@@ -87,7 +87,6 @@ const Settings: React.FC<Props> = ({ uid, masterMeds }) => {
                 justifyContent: "space-between",
                 alignItems: "center",
                 padding: "10px 12px",
-                borderBottom: "1px solid #eee",
                 borderRadius: "4px",
               }}
             >
