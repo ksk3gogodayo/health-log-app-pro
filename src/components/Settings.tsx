@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./Settings.css";
 import { useLanguage } from "../contexts/LanguageContext";
 import {
   addMasterMed,
@@ -35,7 +36,7 @@ const Settings: React.FC<Props> = ({ uid, masterMeds }) => {
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "500px", margin: "0 auto" }}>
+    <div className="medication-settings" style={{ padding: "20px", maxWidth: "500px", margin: "0 auto" }}>
       <h2 style={{ marginBottom: "16px" }}>{t.medSettings}</h2>
 
       <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
@@ -90,8 +91,9 @@ const Settings: React.FC<Props> = ({ uid, masterMeds }) => {
                 borderRadius: "4px",
               }}
             >
-              <span>💊 {name}</span>
+              <span className="medication-settings__name">💊 {name}</span>
               <button
+                className="medication-settings__delete"
                 onClick={() => handleDelete(name)}
                 style={{
                   padding: "4px 10px",
