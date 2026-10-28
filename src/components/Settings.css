@@ -1,0 +1,22 @@
+.medication-settings {
+  background: #fff;
+  color: #17212b;
+  border: 1px solid #d4dce4;
+  border-radius: 12px;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.16);
+}
+.medication-settings li {
+  gap: 12px;
+}
+.medication-settings__name {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+.medication-settings__delete {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-width: 56px;
+  min-height: 44px;
+}
